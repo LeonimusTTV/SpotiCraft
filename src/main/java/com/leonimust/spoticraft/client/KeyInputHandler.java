@@ -1,7 +1,6 @@
 package com.leonimust.spoticraft.client;
 
 import com.leonimust.spoticraft.SpotiCraft;
-import com.leonimust.spoticraft.client.SpotifyScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
@@ -17,7 +16,9 @@ public class KeyInputHandler {
         if (ClientSetup.openSpotifyKey.isDown()) {
             if (!wasPressed) {
                 wasPressed = true;
+                TokenStorage.loadToken();
                 Minecraft.getInstance().setScreen(new SpotifyScreen());
+                System.out.println("tetwatwattw");
             }
         } else {
             wasPressed = false;

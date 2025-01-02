@@ -2,14 +2,13 @@ package com.leonimust.spoticraft.client;
 
 import java.net.URI;
 
-import com.nimbusds.oauth2.sdk.token.Token;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.vehicle.Minecart;
 import okhttp3.*;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Objects;
 
 import org.json.JSONObject;
 
@@ -21,6 +20,7 @@ public class SpotifyAuthHandler {
     private static final String SCOPES = "user-read-playback-state user-modify-playback-state";
     private static final String ENCODED_SCOPES = URLEncoder.encode(SCOPES, StandardCharsets.UTF_8);
 
+    //private static TokenStorage tokenStorage = TokenStorage.getInstance();
 
     public static void exchangeCodeForToken(String code) throws IOException {
         String url = "https://accounts.spotify.com/api/token";
@@ -52,6 +52,7 @@ public class SpotifyAuthHandler {
 
                 //spotifyScreen.loginSuccess();
                 Minecraft.getInstance().setScreen(null);
+                Minecraft.getInstance().setScreen(new SpotifyScreen());
             } else {
                 System.err.println("Failed to exchange code: " + response.message());
             }
@@ -101,7 +102,15 @@ public class SpotifyAuthHandler {
                     CLIENT_ID, URI.create(REDIRECT_URI), URI.create(ENCODED_SCOPES)
             );
 
-            new ProcessBuilder("open", authUrl).start();
+            String osName = System.getProperty("os.name");
+
+            if (Objects.equals(osName, "Mac OS X")) {
+                new ProcessBuilder("open", authUrl).start();
+            } else if (osName.contains("Windows")) {
+                new ProcessBuilder("start", authUrl).start();
+            } else {
+                System.err.println("Unsupported OS: " + osName);
+            }
 
             // Start callback server
             new CallbackServer(8080);
