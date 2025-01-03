@@ -2,6 +2,7 @@ package com.leonimust.spoticraft.client;
 
 import com.leonimust.spoticraft.SpotiCraft;
 import com.leonimust.spoticraft.client.ui.ImageButton;
+import com.leonimust.spoticraft.client.ui.TextManager;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -15,6 +16,7 @@ import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,6 +33,7 @@ public class SpotifyScreen extends Screen {
 
     private ImageButton playStopButton;
     private ImageButton shuffleButton;
+    private ImageButton repeatButton;
 
     public static SpotifyApi spotifyApi;
     private Timer updateTimer;
@@ -40,14 +43,22 @@ public class SpotifyScreen extends Screen {
 
     private boolean userPremium = false;
 
+    private TextManager textManager;
+    private Timer tempMessageTimer;
+
     ResourceLocation PLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/play.png");
     ResourceLocation PAUSE_TEXTURE = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/pause.png");
+
+    private final String[] trackList = {"off", "context", "track"};
+    private int trackIndex = 0;
 
     @Override
     public void init() {
         if (token == null) {
             return;
         }
+
+        this.textManager = new TextManager(this.font);
 
         try {
             TokenStorage.checkIfExpired();
@@ -163,7 +174,7 @@ public class SpotifyScreen extends Screen {
                         spotifyApi.skipUsersPlaybackToNextTrack().build().execute();
                         syncPlaybackState();
                     } catch (IOException | SpotifyWebApiException | ParseException e) {
-                        throw new RuntimeException(e);
+                        ShowTempMessage("No device found !");
                     }
                 }
         );
@@ -182,7 +193,7 @@ public class SpotifyScreen extends Screen {
                         spotifyApi.skipUsersPlaybackToPreviousTrack().build().execute();
                         syncPlaybackState();
                     } catch (IOException | SpotifyWebApiException | ParseException e) {
-                        throw new RuntimeException(e);
+                        ShowTempMessage("No device found !");
                     }
                 }
         );
@@ -207,7 +218,29 @@ public class SpotifyScreen extends Screen {
 
                             previousButton.setActive(!shuffleState);
                         } catch (IOException | SpotifyWebApiException | ParseException e) {
-                            throw new RuntimeException(e);
+                            ShowTempMessage("No device found !");
+                        }
+                    }
+            );
+        }
+
+        if (repeatButton == null) {
+            repeatButton = new ImageButton(
+                    this.width / 2 + 35,
+                    this.height - 47,
+                    15, // Button width
+                    15, // Button height
+                    ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/repeat.png"),  // Use stop texture if playing, otherwise play texture
+                    15, // Full texture width
+                    15, // Full texture height
+                    trackIndex == 0 ? "gui.spoticraft.enable-repeat" : trackIndex == 1 ? "gui.spoticraft.enable-repeat-one" : "gui.spoticraft.disable-repeat",
+                    button -> {
+                        try {
+                            trackIndex = (trackIndex + 1) % trackList.length;
+                            spotifyApi.setRepeatModeOnUsersPlayback(trackList[trackIndex]).build().execute();
+                            repeatButton.setTooltip(trackIndex == 0 ? "gui.spoticraft.enable-repeat" : trackIndex == 1 ? "gui.spoticraft.enable-repeat-one" : "gui.spoticraft.disable-repeat");
+                        } catch (IOException | SpotifyWebApiException | ParseException e) {
+                            ShowTempMessage("No device found !");
                         }
                     }
             );
@@ -219,6 +252,9 @@ public class SpotifyScreen extends Screen {
         this.addRenderableWidget(previousButton);
         this.addRenderableWidget(nextButton);
         this.addRenderableWidget(shuffleButton);
+        this.addRenderableWidget(repeatButton);
+
+        textManager.drawText(graphics);
 
         this.drawMusicControlBar(graphics);
     }
@@ -240,10 +276,19 @@ public class SpotifyScreen extends Screen {
                 currentProgressMs = context.getProgress_ms();
                 musicPlaying = context.getIs_playing();
                 shuffleState = context.getShuffle_state();
+                System.out.println(context.getRepeat_state());
+                for (int i = 0; i < trackList.length; i++) {
+                    if (trackList[i].equalsIgnoreCase(context.getRepeat_state())) {
+                        trackIndex = i;
+                        break;
+                    }
+                }
+                //trackIndex = trackList.;
                 lastUpdateTime = System.currentTimeMillis(); // Sync the timer with Spotify's state
             }
         } catch (Exception e) {
             System.out.println("Failed to sync playback state : " + e.getMessage());
+            ShowTempMessage("Failed to sync playback state !");
         }
     }
 
@@ -270,6 +315,23 @@ public class SpotifyScreen extends Screen {
         // Calculate the text width and draw it centered
         int textWidth = this.font.width(text);
         guiGraphics.drawString(this.font, text, centerX - textWidth / 2, y, color);
+    }
+
+    private void ShowTempMessage(String message) {
+        // Set text for the message
+        textManager.setText(message, this.width / 2, this.height / 2, 16777215);
+
+        // Clear text after 5 seconds
+        if (tempMessageTimer != null) {
+            tempMessageTimer.cancel(); // Cancel any existing timer
+        }
+        tempMessageTimer = new Timer();
+        tempMessageTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                textManager.clearText();
+            }
+        }, 5000);
     }
 
     // mouse action

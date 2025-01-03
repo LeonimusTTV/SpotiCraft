@@ -7,5 +7,8 @@
   "gui.spoticraft.next": "Next",
   "gui.spoticraft.previous": "Previous",
   "gui.spoticraft.enable-shuffle": "Enable Shuffle",
-  "gui.spoticraft.disable-shuffle": "Disable Shuffle"
+  "gui.spoticraft.disable-shuffle": "Disable Shuffle",
+  "gui.spoticraft.enable-repeat": "Enable Repeat",
+  "gui.spoticraft.enable-repeat-one": "Enable Repeat One",
+  "gui.spoticraft.disable-repeat": "Disable Repeat"
 }
