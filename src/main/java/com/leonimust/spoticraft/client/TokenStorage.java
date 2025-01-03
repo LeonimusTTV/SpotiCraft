@@ -1,6 +1,7 @@
 package com.leonimust.spoticraft.client;
 
 import org.json.JSONObject;
+import se.michaelthelin.spotify.SpotifyApi;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -9,8 +10,6 @@ import java.nio.file.Files;
 
 public class TokenStorage {
     private static final File tokenFile = new File("spotify_tokens.json");
-
-    private static TokenStorage instance;
 
     public static JSONObject token;
 
@@ -51,13 +50,25 @@ public class TokenStorage {
     }
 
     public static void checkIfExpired() throws IOException {
-        if (token == null) {
-            loadToken();
-        }
+        synchronized (TokenStorage.class) { // Synchronize to avoid concurrent modifications
+            if (token == null) {
+                loadToken();
+            }
 
-        if (token.getLong("timestamp") <= System.currentTimeMillis()) {
-            System.out.println("Token is expired");
-            SpotifyAuthHandler.refreshAccessToken(token.getString("refresh_token"));
+            if (token.getLong("timestamp") <= System.currentTimeMillis()) {
+                System.out.println("Token is expired");
+
+                // Refresh the token and wait for completion
+                boolean refreshed = SpotifyAuthHandler.refreshAccessToken(token.getString("refresh_token"));
+                if (!refreshed) {
+                    throw new IOException("Failed to refresh the token");
+                }
+
+                SpotifyScreen.spotifyApi = new SpotifyApi.Builder()
+                        .setAccessToken(token.getString("access_token"))
+                        .setRefreshToken(token.getString("refresh_token"))
+                        .build();
+            }
         }
     }
 }

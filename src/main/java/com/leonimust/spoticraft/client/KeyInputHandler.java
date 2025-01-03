@@ -18,7 +18,6 @@ public class KeyInputHandler {
                 wasPressed = true;
                 TokenStorage.loadToken();
                 Minecraft.getInstance().setScreen(new SpotifyScreen());
-                System.out.println("tetwatwattw");
             }
         } else {
             wasPressed = false;

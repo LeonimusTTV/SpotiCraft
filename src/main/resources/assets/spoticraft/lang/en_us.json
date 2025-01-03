@@ -1,5 +1,11 @@
 {
   "key.spoticraft.open_spotify": "Open Spotify Player",
   "key.categories.spoticraft": "SpotiCraft",
-  "gui.spoticraft.spotify_player": "Spotify Player"
+  "gui.spoticraft.spotify_player": "Spotify Player",
+  "gui.spoticraft.play" : "Play",
+  "gui.spoticraft.pause": "Pause",
+  "gui.spoticraft.next": "Next",
+  "gui.spoticraft.previous": "Previous",
+  "gui.spoticraft.enable-shuffle": "Enable Shuffle",
+  "gui.spoticraft.disable-shuffle": "Disable Shuffle"
 }

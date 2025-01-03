@@ -17,7 +17,7 @@ public class SpotifyAuthHandler {
     private static final String CLIENT_ID = "d108b6364fff46f2b17c03145e48040a";
     private static final String CLIENT_SECRET = "cd9d5622ec944476a5fb204a656e3614";
     private static final String REDIRECT_URI = "http://localhost:8080/callback";
-    private static final String SCOPES = "user-read-playback-state user-modify-playback-state";
+    private static final String SCOPES = "user-read-playback-state user-modify-playback-state user-read-private";
     private static final String ENCODED_SCOPES = URLEncoder.encode(SCOPES, StandardCharsets.UTF_8);
 
     //private static TokenStorage tokenStorage = TokenStorage.getInstance();
@@ -59,7 +59,7 @@ public class SpotifyAuthHandler {
         }
     }
 
-    public static void refreshAccessToken(String refreshToken) throws IOException {
+    public static boolean refreshAccessToken(String refreshToken) throws IOException {
         String url = "https://accounts.spotify.com/api/token";
         OkHttpClient client = new OkHttpClient();
 
@@ -84,10 +84,12 @@ public class SpotifyAuthHandler {
                 System.out.println("Refresh token response: " + responseBody);
                 // Parse and store the new access token
                 TokenStorage.saveToken(responseBody.getString("access_token"), refreshToken, responseBody.getInt("expires_in"));  // Store the new token
+                return true;
             } else {
                 System.err.println("Failed to refresh token: " + response.message());
             }
         }
+        return false;
     }
 
     public static void startAuthFlow() {
