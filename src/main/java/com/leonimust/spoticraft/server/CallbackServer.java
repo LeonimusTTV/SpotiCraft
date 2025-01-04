@@ -1,4 +1,4 @@
-package com.leonimust.spoticraft.client;
+package com.leonimust.spoticraft.server;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -21,6 +21,7 @@ public class CallbackServer extends NanoHTTPD {
             // Exchange code for token
             new Thread(() -> {
                 try {
+                    //System.out.println(code.getFirst());
                     SpotifyAuthHandler.exchangeCodeForToken(code.getFirst());
                 } catch (Exception e) {
                     System.out.println(e.getMessage());

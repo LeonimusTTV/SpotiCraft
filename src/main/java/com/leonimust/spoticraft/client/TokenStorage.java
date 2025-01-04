@@ -1,5 +1,6 @@
 package com.leonimust.spoticraft.client;
 
+import com.leonimust.spoticraft.server.SpotifyAuthHandler;
 import org.json.JSONObject;
 import se.michaelthelin.spotify.SpotifyApi;
 

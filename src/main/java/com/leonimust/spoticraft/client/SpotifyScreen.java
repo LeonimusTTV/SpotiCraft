@@ -2,9 +2,13 @@ package com.leonimust.spoticraft.client;
 
 import com.leonimust.spoticraft.SpotiCraft;
 import com.leonimust.spoticraft.client.ui.ImageButton;
+import com.leonimust.spoticraft.client.ui.SpotifyImageHandler;
 import com.leonimust.spoticraft.client.ui.TextManager;
+import com.leonimust.spoticraft.server.SpotifyAuthHandler;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.CommonComponents;
@@ -16,9 +20,10 @@ import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Function;
 
 import static com.leonimust.spoticraft.client.TokenStorage.token;
 
@@ -38,7 +43,7 @@ public class SpotifyScreen extends Screen {
     public static SpotifyApi spotifyApi;
     private Timer updateTimer;
 
-    private final int barWidth = 300;
+    private final int barWidth = 250;
     private final int barHeight = 7;
 
     private boolean userPremium = false;
@@ -51,6 +56,14 @@ public class SpotifyScreen extends Screen {
 
     private final String[] trackList = {"off", "context", "track"};
     private int trackIndex = 0;
+
+    private ResourceLocation musicImage; // Holds the texture for the current music cover
+
+    private final HashMap<String, String> trackCache = new HashMap<>();
+
+    private final int volumeBarWidth = 75;
+    private final int volumeBarHeight = 7;
+    private int currentVolume = 50;
 
     @Override
     public void init() {
@@ -79,7 +92,11 @@ public class SpotifyScreen extends Screen {
         }
 
         // Sync playback state when the screen is opened
-        syncPlaybackState();
+        try {
+            syncPlaybackState();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         // Set up a timer to update progress every second
         updateTimer = new Timer();
@@ -93,7 +110,11 @@ public class SpotifyScreen extends Screen {
                     lastUpdateTime = currentTime; // Update the last sync time
 
                     if (currentProgressMs >= totalDurationMs) {
-                        syncPlaybackState();
+                        try {
+                            syncPlaybackState();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }
@@ -139,6 +160,26 @@ public class SpotifyScreen extends Screen {
     }
 
     private void mainScreen() {
+
+        if (musicImage != null) {
+            int imageWidth = 50;
+            int imageHeight = 50;
+
+            RenderSystem.setShaderTexture(0, musicImage); // Bind the texture
+            Function<ResourceLocation, RenderType> renderType = RenderType::guiTextured;
+            graphics.blit(
+                    renderType,
+                    musicImage,
+                    5,
+                    this.height - imageHeight - 5,
+                    0,
+                    0,
+                    imageWidth,
+                    imageHeight,
+                    imageWidth,
+                    imageHeight);
+        }
+
         //Minecraft ImageButton is shit and doesn't work ;_; thanks for the 4 hours of lost time xD
         if (playStopButton == null) {
             playStopButton = new ImageButton(
@@ -150,7 +191,13 @@ public class SpotifyScreen extends Screen {
                     20, // Full texture width
                     20, // Full texture height
                     musicPlaying ? "gui.spoticraft.pause" : "gui.spoticraft.play",
-                    button -> toggleMusicPlayback() // Toggle playback on click
+                    button -> {
+                        try {
+                            toggleMusicPlayback();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } // Toggle playback on click
             );
         }
 
@@ -171,10 +218,18 @@ public class SpotifyScreen extends Screen {
                 "gui.spoticraft.next",
                 button -> {
                     try {
+                        try {
+                            TokenStorage.checkIfExpired();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
                         spotifyApi.skipUsersPlaybackToNextTrack().build().execute();
                         syncPlaybackState();
                     } catch (IOException | SpotifyWebApiException | ParseException e) {
                         ShowTempMessage("No device found !");
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
                 }
         );
@@ -190,10 +245,18 @@ public class SpotifyScreen extends Screen {
                 "gui.spoticraft.previous",
                 button -> {
                     try {
+                        try {
+                            TokenStorage.checkIfExpired();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
                         spotifyApi.skipUsersPlaybackToPreviousTrack().build().execute();
                         syncPlaybackState();
                     } catch (IOException | SpotifyWebApiException | ParseException e) {
                         ShowTempMessage("No device found !");
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
                 }
         );
@@ -212,6 +275,12 @@ public class SpotifyScreen extends Screen {
                     shuffleState ? "gui.spoticraft.disable-shuffle" : "gui.spoticraft.enable-shuffle",
                     button -> {
                         try {
+                            try {
+                                TokenStorage.checkIfExpired();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+
                             spotifyApi.toggleShuffleForUsersPlayback(!shuffleState).build().execute();
                             shuffleState = !shuffleState;
                             shuffleButton.setTooltip(shuffleState ? "gui.spoticraft.disable-shuffle" : "gui.spoticraft.enable-shuffle");
@@ -236,6 +305,12 @@ public class SpotifyScreen extends Screen {
                     trackIndex == 0 ? "gui.spoticraft.enable-repeat" : trackIndex == 1 ? "gui.spoticraft.enable-repeat-one" : "gui.spoticraft.disable-repeat",
                     button -> {
                         try {
+                            try {
+                                TokenStorage.checkIfExpired();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+
                             trackIndex = (trackIndex + 1) % trackList.length;
                             spotifyApi.setRepeatModeOnUsersPlayback(trackList[trackIndex]).build().execute();
                             repeatButton.setTooltip(trackIndex == 0 ? "gui.spoticraft.enable-repeat" : trackIndex == 1 ? "gui.spoticraft.enable-repeat-one" : "gui.spoticraft.disable-repeat");
@@ -257,6 +332,7 @@ public class SpotifyScreen extends Screen {
         textManager.drawText(graphics);
 
         this.drawMusicControlBar(graphics);
+        this.drawVolumeBar(graphics);
     }
 
     private void noPremium() {
@@ -268,7 +344,9 @@ public class SpotifyScreen extends Screen {
     }
 
     // sync
-    private void syncPlaybackState() {
+    private void syncPlaybackState() throws InterruptedException {
+        System.out.println("Sync playback state");
+        Thread.sleep(250);
         try {
             CurrentlyPlayingContext context = spotifyApi.getInformationAboutUsersCurrentPlayback().build().execute();
             if (context != null && context.getItem() != null) {
@@ -276,7 +354,8 @@ public class SpotifyScreen extends Screen {
                 currentProgressMs = context.getProgress_ms();
                 musicPlaying = context.getIs_playing();
                 shuffleState = context.getShuffle_state();
-                System.out.println(context.getRepeat_state());
+                currentVolume = context.getDevice().getVolume_percent();
+
                 for (int i = 0; i < trackList.length; i++) {
                     if (trackList[i].equalsIgnoreCase(context.getRepeat_state())) {
                         trackIndex = i;
@@ -284,7 +363,21 @@ public class SpotifyScreen extends Screen {
                     }
                 }
                 //trackIndex = trackList.;
-                lastUpdateTime = System.currentTimeMillis(); // Sync the timer with Spotify's state
+                lastUpdateTime = System.currentTimeMillis() - 500; // Sync the timer with Spotify's state
+                // cache track image url so doesn't need to ask spotify api and avoid 304 Not Modified responses
+                System.out.println("track : " + trackCache.get(context.getItem().getId()));
+                if (trackCache.get(context.getItem().getId()) != null) {
+                    loadMusicImage(trackCache.get(context.getItem().getId()));
+                } else {
+                    String url = spotifyApi.getTrack(context.getItem().getId()).build().execute().getAlbum().getImages()[0].getUrl();
+                    System.out.println("Track URL: " + url);
+                    loadMusicImage(url);
+                    trackCache.put(context.getItem().getId(), url);
+                }
+
+                if (repeatButton != null) {
+                    repeatButton.setTooltip(trackIndex == 0 ? "gui.spoticraft.enable-repeat" : trackIndex == 1 ? "gui.spoticraft.enable-repeat-one" : "gui.spoticraft.disable-repeat");
+                }
             }
         } catch (Exception e) {
             System.out.println("Failed to sync playback state : " + e.getMessage());
@@ -309,6 +402,22 @@ public class SpotifyScreen extends Screen {
         String durationTime = formatTime(totalDurationMs / 1000);
         drawCenteredString(graphics, currentTime, this.width / 2 - ((barWidth + 30) / 2), barY - ((barHeight - 5) / 2), 0xFFFFFF);
         drawCenteredString(graphics, durationTime, this.width / 2 + ((barWidth + 30) / 2), barY - ((barHeight - 5) / 2), 0xFFFFFF);
+    }
+
+    private void drawVolumeBar(GuiGraphics graphics) {
+        int barX = this.width - volumeBarWidth - 35;
+        int barY = this.height - 20; // Position above the playback control buttons
+
+        // Draw the background of the volume bar
+        graphics.fill(barX, barY, barX + volumeBarWidth, barY + volumeBarHeight, 0xFFCCCCCC);
+
+        // Draw the filled portion of the volume bar
+        int filledWidth = (int) ((currentVolume / 100.0) * volumeBarWidth);
+        graphics.fill(barX, barY, barX + filledWidth, barY + volumeBarHeight, 0xFFFFFFFF);
+
+        // Draw the volume percentage
+        String volumeText = currentVolume + "%";
+        drawCenteredString(graphics, volumeText, barX + volumeBarWidth + 20, barY + (volumeBarHeight / 2) - 4, 0xFFFFFF);
     }
 
     public void drawCenteredString(GuiGraphics guiGraphics, String text, int centerX, int y, int color) {
@@ -339,16 +448,19 @@ public class SpotifyScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int barX = this.width / 2 - barWidth / 2;
         int barY = this.height - 20;
+        int volumeBarX = this.width - volumeBarWidth - 35;
+        int volumeBarY = this.height - 20;
 
         if (mouseX >= barX && mouseX <= barX + barWidth && mouseY >= barY && mouseY <= barY + barHeight) {
             currentProgressMs = (int) (((mouseX - barX) / barWidth) * totalDurationMs);
-            try {
-                spotifyApi.seekToPositionInCurrentlyPlayingTrack(currentProgressMs).build().executeAsync();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+            return changePositionInCurrentTrack();
+        }
+
+        if (mouseX >= volumeBarX && mouseX <= volumeBarX + volumeBarWidth && mouseY >= volumeBarY && mouseY <= volumeBarY + volumeBarHeight) {
+            updateVolume((int) ((mouseX - volumeBarX) / volumeBarWidth * 100));
             return true;
         }
+
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -356,16 +468,19 @@ public class SpotifyScreen extends Screen {
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         int barX = this.width / 2 - barWidth / 2;
         int barY = this.height - 20;
+        int volumeBarX = this.width - volumeBarWidth - 35;
+        int volumeBarY = this.height - 20;
 
         // Check if dragging is within the bounds of the progress bar
         if (mouseX >= barX && mouseX <= barX + barWidth && mouseY >= barY && mouseY <= barY + barHeight) {
-            try {
-                spotifyApi.seekToPositionInCurrentlyPlayingTrack(currentProgressMs).build().executeAsync();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+            return changePositionInCurrentTrack();
+        }
+
+        if (mouseX >= volumeBarX && mouseX <= volumeBarX + volumeBarWidth && mouseY >= volumeBarY && mouseY <= volumeBarY + volumeBarHeight) {
+            updateVolume((int) ((mouseX - volumeBarX) / volumeBarWidth * 100));
             return true;
         }
+
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
@@ -373,6 +488,8 @@ public class SpotifyScreen extends Screen {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         int barX = this.width / 2 - barWidth / 2;
         int barY = this.height - 20;
+        int volumeBarX = this.width - volumeBarWidth - 35;
+        int volumeBarY = this.height - 20;
 
         // Check if dragging is within the bounds of the progress bar
         if (mouseX >= barX && mouseX <= barX + barWidth && mouseY >= barY && mouseY <= barY + barHeight) {
@@ -381,11 +498,18 @@ public class SpotifyScreen extends Screen {
             currentProgressMs = Math.max(0, Math.min(currentProgressMs, totalDurationMs)); // Clamp between 0 and total duration
             return true;
         }
+
+        if (mouseX >= volumeBarX && mouseX <= volumeBarX + volumeBarWidth && mouseY >= volumeBarY && mouseY <= volumeBarY + volumeBarHeight) {
+            //updateVolume((int) ((mouseX - volumeBarX) / volumeBarWidth * 100));
+            currentVolume = (int) ((mouseX - volumeBarX) / volumeBarWidth * 100);
+            return true;
+        }
+
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     // ui controls
-    private void toggleMusicPlayback() {
+    private void toggleMusicPlayback() throws InterruptedException {
         try {
             TokenStorage.checkIfExpired();
         } catch (IOException e) {
@@ -402,11 +526,41 @@ public class SpotifyScreen extends Screen {
         }
     }
 
+    private void updateVolume(int newVolume) {
+        currentVolume = Math.max(0, Math.min(newVolume, 100)); // Clamp between 0 and 100
+
+        // Send the volume update to Spotify API
+        try {
+            spotifyApi.setVolumeForUsersPlayback(currentVolume).build().executeAsync();
+        } catch (Exception e) {
+            ShowTempMessage("Failed to set volume: " + e.getMessage());
+        }
+    }
+
     // other
     private String formatTime(int seconds) {
         int minutes = seconds / 60;
         int remainingSeconds = seconds % 60;
         return String.format("%d:%02d", minutes, remainingSeconds);
+    }
+
+    public void loadMusicImage(String url) {
+        musicImage = SpotifyImageHandler.downloadImage(url); // Download and set the image
+    }
+
+    private boolean changePositionInCurrentTrack() {
+        try {
+            try {
+                TokenStorage.checkIfExpired();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            spotifyApi.seekToPositionInCurrentlyPlayingTrack(currentProgressMs).build().executeAsync();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return true;
     }
 
     @Override
