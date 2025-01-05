@@ -6,9 +6,14 @@
   "gui.spoticraft.pause": "Pause",
   "gui.spoticraft.next": "Next",
   "gui.spoticraft.previous": "Previous",
-  "gui.spoticraft.enable-shuffle": "Enable Shuffle",
-  "gui.spoticraft.disable-shuffle": "Disable Shuffle",
-  "gui.spoticraft.enable-repeat": "Enable Repeat",
-  "gui.spoticraft.enable-repeat-one": "Enable Repeat One",
-  "gui.spoticraft.disable-repeat": "Disable Repeat"
+  "gui.spoticraft.enable_shuffle": "Enable Shuffle",
+  "gui.spoticraft.disable_shuffle": "Disable Shuffle",
+  "gui.spoticraft.enable_repeat": "Enable Repeat",
+  "gui.spoticraft.enable_repeat_one": "Enable Repeat One",
+  "gui.spoticraft.disable_repeat": "Disable Repeat",
+  "gui.spoticraft.no_device": "No device found !",
+  "gui.spoticraft.not_logged": "It seems you aren't logged in, press the button bellow to log yourself.",
+  "gui.spoticraft.no_premium": "It seems that you don't have Spotify Premium on this account, you need Spotify Premium to use this mod.",
+  "gui.spoticraft.no_premium_2": "Click the button bellow if you want to change account.",
+  "gui.spoticraft.sync_error": "Failed to sync playback state !"
 }

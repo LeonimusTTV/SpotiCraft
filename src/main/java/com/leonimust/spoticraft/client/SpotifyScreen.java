@@ -1,9 +1,7 @@
 package com.leonimust.spoticraft.client;
 
 import com.leonimust.spoticraft.SpotiCraft;
-import com.leonimust.spoticraft.client.ui.ImageButton;
-import com.leonimust.spoticraft.client.ui.SpotifyImageHandler;
-import com.leonimust.spoticraft.client.ui.TextManager;
+import com.leonimust.spoticraft.client.ui.*;
 import com.leonimust.spoticraft.server.SpotifyAuthHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.components.Button;
@@ -92,11 +90,7 @@ public class SpotifyScreen extends Screen {
         }
 
         // Sync playback state when the screen is opened
-        try {
-            syncPlaybackState();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        syncData();
 
         // Set up a timer to update progress every second
         updateTimer = new Timer();
@@ -111,7 +105,7 @@ public class SpotifyScreen extends Screen {
 
                     if (currentProgressMs >= totalDurationMs) {
                         try {
-                            syncPlaybackState();
+                            syncDataWithDelay();
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
@@ -153,7 +147,7 @@ public class SpotifyScreen extends Screen {
 
     // screens
     private void loginScreen() {
-        this.drawCenteredString(graphics, "It seems you aren't logged in, press the button bellow to log yourself.", this.width / 2, 20, 16777215);
+        this.drawCenteredString(graphics, Component.translatable("gui.spoticraft.not_logged").getString(), this.width / 2, 20, 16777215);
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_OPEN_IN_BROWSER, button ->
                 SpotifyAuthHandler.startAuthFlow()
         ).bounds(this.width / 2 - 50, this.height / 2, 100, 20).build());
@@ -225,9 +219,9 @@ public class SpotifyScreen extends Screen {
                         }
 
                         spotifyApi.skipUsersPlaybackToNextTrack().build().execute();
-                        syncPlaybackState();
+                        syncDataWithDelay();
                     } catch (IOException | SpotifyWebApiException | ParseException e) {
-                        ShowTempMessage("No device found !");
+                        ShowTempMessage("gui.spoticraft.no_device");
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -252,14 +246,21 @@ public class SpotifyScreen extends Screen {
                         }
 
                         spotifyApi.skipUsersPlaybackToPreviousTrack().build().execute();
-                        syncPlaybackState();
+                        syncDataWithDelay();
                     } catch (IOException | SpotifyWebApiException | ParseException e) {
-                        ShowTempMessage("No device found !");
+                        ShowTempMessage("gui.spoticraft.no_device");
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 }
         );
+
+        /*new PlaylistItem(
+                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
+                "Test",
+                "Playlist - LeonimusT",
+                this.font,
+                graphics, this.width / 2, this.height / 2).draw();*/
 
         previousButton.setActive(!shuffleState);
 
@@ -272,7 +273,7 @@ public class SpotifyScreen extends Screen {
                     ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/shuffle.png"),  // Use stop texture if playing, otherwise play texture
                     15, // Full texture width
                     15, // Full texture height
-                    shuffleState ? "gui.spoticraft.disable-shuffle" : "gui.spoticraft.enable-shuffle",
+                    shuffleState ? "gui.spoticraft.disable_shuffle" : "gui.spoticraft.enable_shuffle",
                     button -> {
                         try {
                             try {
@@ -283,11 +284,11 @@ public class SpotifyScreen extends Screen {
 
                             spotifyApi.toggleShuffleForUsersPlayback(!shuffleState).build().execute();
                             shuffleState = !shuffleState;
-                            shuffleButton.setTooltip(shuffleState ? "gui.spoticraft.disable-shuffle" : "gui.spoticraft.enable-shuffle");
+                            shuffleButton.setTooltip(shuffleState ? "gui.spoticraft.disable_shuffle" : "gui.spoticraft.enable_shuffle");
 
                             previousButton.setActive(!shuffleState);
                         } catch (IOException | SpotifyWebApiException | ParseException e) {
-                            ShowTempMessage("No device found !");
+                            ShowTempMessage("gui.spoticraft.no_device");
                         }
                     }
             );
@@ -302,7 +303,7 @@ public class SpotifyScreen extends Screen {
                     ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/repeat.png"),  // Use stop texture if playing, otherwise play texture
                     15, // Full texture width
                     15, // Full texture height
-                    trackIndex == 0 ? "gui.spoticraft.enable-repeat" : trackIndex == 1 ? "gui.spoticraft.enable-repeat-one" : "gui.spoticraft.disable-repeat",
+                    trackIndex == 0 ? "gui.spoticraft.enable_repeat" : trackIndex == 1 ? "gui.spoticraft.enable_repeat_one" : "gui.spoticraft.disable_repeat",
                     button -> {
                         try {
                             try {
@@ -313,14 +314,13 @@ public class SpotifyScreen extends Screen {
 
                             trackIndex = (trackIndex + 1) % trackList.length;
                             spotifyApi.setRepeatModeOnUsersPlayback(trackList[trackIndex]).build().execute();
-                            repeatButton.setTooltip(trackIndex == 0 ? "gui.spoticraft.enable-repeat" : trackIndex == 1 ? "gui.spoticraft.enable-repeat-one" : "gui.spoticraft.disable-repeat");
+                            repeatButton.setTooltip(trackIndex == 0 ? "gui.spoticraft.enable_repeat" : trackIndex == 1 ? "gui.spoticraft.enable_repeat_one" : "gui.spoticraft.disable_repeat");
                         } catch (IOException | SpotifyWebApiException | ParseException e) {
-                            ShowTempMessage("No device found !");
+                            ShowTempMessage("gui.spoticraft.no_device");
                         }
                     }
             );
         }
-
         // Add the button to the screen
         this.addRenderableWidget(playStopButton);
 
@@ -336,17 +336,21 @@ public class SpotifyScreen extends Screen {
     }
 
     private void noPremium() {
-        this.drawCenteredString(graphics, "It seems that you don't have Spotify Premium on this account, you need Spotify Premium to use this mod.", this.width / 2, 20, 16777215);
-        this.drawCenteredString(graphics, "Click the button bellow if you want to change account.", this.width / 2, 35, 16777215);
+        this.drawCenteredString(graphics, Component.translatable("gui.spoticraft.no_premium").getString(), this.width / 2, 20, 16777215);
+        this.drawCenteredString(graphics, Component.translatable("gui.spoticraft.no_premium_2").getString(), this.width / 2, 35, 16777215);
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_OPEN_IN_BROWSER, button ->
                 SpotifyAuthHandler.startAuthFlow()
         ).bounds(this.width / 2 - 50, this.height / 2, 100, 20).build());
     }
 
-    // sync
-    private void syncPlaybackState() throws InterruptedException {
-        System.out.println("Sync playback state");
+    private void syncDataWithDelay() throws InterruptedException {
         Thread.sleep(250);
+        syncData();
+    }
+
+    // sync
+    private void syncData() {
+        System.out.println("Sync playback state");
         try {
             CurrentlyPlayingContext context = spotifyApi.getInformationAboutUsersCurrentPlayback().build().execute();
             if (context != null && context.getItem() != null) {
@@ -363,7 +367,7 @@ public class SpotifyScreen extends Screen {
                     }
                 }
                 //trackIndex = trackList.;
-                lastUpdateTime = System.currentTimeMillis() - 500; // Sync the timer with Spotify's state
+                lastUpdateTime = System.currentTimeMillis() - 500; // Sync the timer with Spotify's state and add a lil more because of the request time
                 // cache track image url so doesn't need to ask spotify api and avoid 304 Not Modified responses
                 System.out.println("track : " + trackCache.get(context.getItem().getId()));
                 if (trackCache.get(context.getItem().getId()) != null) {
@@ -376,12 +380,12 @@ public class SpotifyScreen extends Screen {
                 }
 
                 if (repeatButton != null) {
-                    repeatButton.setTooltip(trackIndex == 0 ? "gui.spoticraft.enable-repeat" : trackIndex == 1 ? "gui.spoticraft.enable-repeat-one" : "gui.spoticraft.disable-repeat");
+                    repeatButton.setTooltip(trackIndex == 0 ? "gui.spoticraft.enable_repeat" : trackIndex == 1 ? "gui.spoticraft.enable_repeat_one" : "gui.spoticraft.disable_repeat");
                 }
             }
         } catch (Exception e) {
             System.out.println("Failed to sync playback state : " + e.getMessage());
-            ShowTempMessage("Failed to sync playback state !");
+            ShowTempMessage("gui.spoticraft.sync_error");
         }
     }
 
@@ -508,6 +512,7 @@ public class SpotifyScreen extends Screen {
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
+
     // ui controls
     private void toggleMusicPlayback() throws InterruptedException {
         try {
@@ -521,7 +526,7 @@ public class SpotifyScreen extends Screen {
             musicPlaying = false;
         } else {
             spotifyApi.startResumeUsersPlayback().build().executeAsync();
-            syncPlaybackState();
+            syncData();
             musicPlaying = true;
         }
     }
