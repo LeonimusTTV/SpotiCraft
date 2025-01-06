@@ -41,7 +41,7 @@ public class SpotifyScreen extends Screen {
     public static SpotifyApi spotifyApi;
     private Timer updateTimer;
 
-    private final int barWidth = 250;
+    private int barWidth;
     private final int barHeight = 7;
 
     private boolean userPremium = false;
@@ -59,7 +59,7 @@ public class SpotifyScreen extends Screen {
 
     private final HashMap<String, String> trackCache = new HashMap<>();
 
-    private final int volumeBarWidth = 75;
+    private int volumeBarWidth;
     private final int volumeBarHeight = 7;
     private int currentVolume = 50;
 
@@ -68,6 +68,9 @@ public class SpotifyScreen extends Screen {
         if (token == null) {
             return;
         }
+
+        this.barWidth = this.width / 2 - 30;
+        this.volumeBarWidth = this.width / 7;
 
         this.textManager = new TextManager(this.font);
 
@@ -421,7 +424,7 @@ public class SpotifyScreen extends Screen {
 
         // Draw the volume percentage
         String volumeText = currentVolume + "%";
-        drawCenteredString(graphics, volumeText, barX + volumeBarWidth + 20, barY + (volumeBarHeight / 2) - 4, 0xFFFFFF);
+        drawCenteredString(graphics, volumeText, barX + volumeBarWidth + 15, barY + (volumeBarHeight / 2) - 4, 0xFFFFFF);
     }
 
     public void drawCenteredString(GuiGraphics guiGraphics, String text, int centerX, int y, int color) {

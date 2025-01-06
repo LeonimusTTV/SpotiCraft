@@ -13,6 +13,8 @@ import java.util.Objects;
 
 import org.json.JSONObject;
 
+import static com.leonimust.spoticraft.SpotiCraft.LOGGER;
+
 public class SpotifyAuthHandler {
 
     // not the best way but 🤫
@@ -25,18 +27,22 @@ public class SpotifyAuthHandler {
     private static final String BASE_URL = "https://spoticraft.leonimust.com";
 
     public static void exchangeCodeForToken(String code) {
+        System.out.println("Exchange code for token: " + code);
+        LOGGER.info("Exchange code for token: {}", code);
         String url = BASE_URL + "/exchangeCodeForToken?code=" + code;
         OkHttpClient client = new OkHttpClient();
-
+        LOGGER.info("client");
         Request request = new Request.Builder()
                 .url(url)
                 .build();
-
+        LOGGER.info("request");
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
+                LOGGER.info("hmmmmmm");
                 assert response.body() != null;
                 JSONObject responseBody = new JSONObject(response.body().string());
                 System.out.println("Access token response: " + responseBody);
+                LOGGER.info("Access token response: {}", responseBody);
 
                 //refreshAccessToken(responseBody.getString("refresh_token"));
                 // Parse and store the access token
@@ -44,12 +50,15 @@ public class SpotifyAuthHandler {
                         responseBody.getString("refresh_token"), responseBody.getInt("expires_in"));
 
                 //spotifyScreen.loginSuccess();
-                Minecraft.getInstance().setScreen(null);
-                Minecraft.getInstance().setScreen(new SpotifyScreen());
+                //Minecraft.getInstance().setScreen(null);
+                //Minecraft.getInstance().setScreen(new SpotifyScreen());
             } else {
                 System.err.println("Failed to exchange code: " + response.message());
+                LOGGER.info("Failed to exchange code: {}", response.message());
+                throw new RuntimeException("Failed to exchange code: " + response.message());
             }
         } catch (IOException e) {
+            LOGGER.info("Failed to execute request: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -73,24 +82,26 @@ public class SpotifyAuthHandler {
                 return responseBody.getBoolean("success");
             } else {
                 System.err.println("Failed to refresh token: " + response.message());
+                throw new RuntimeException("Failed to refresh token: " + response.message());
             }
         }
-        return false;
     }
 
     public static void startAuthFlow() {
         try {
-            String authUrl = String.format(
-                    "https://accounts.spotify.com/authorize?client_id=%s&response_type=code&redirect_uri=%s&scope=%s",
-                    CLIENT_ID, URI.create(REDIRECT_URI), URI.create(ENCODED_SCOPES)
-            );
+            String authUrl =
+                    "https://accounts.spotify.com/authorize?client_id=" + CLIENT_ID +
+                            "&response_type=code&redirect_uri=" + URI.create(REDIRECT_URI) +
+                            "&scope=" + URI.create(ENCODED_SCOPES);
 
             String osName = System.getProperty("os.name");
 
             if (Objects.equals(osName, "Mac OS X")) {
                 new ProcessBuilder("open", authUrl).start();
             } else if (osName.contains("Windows")) {
-                new ProcessBuilder("start", authUrl).start();
+                // Pass the full command as a single argument to cmd /c
+                System.out.println(authUrl);
+                new ProcessBuilder("cmd", "/c", "start", "\"\" \"" + authUrl + "\"").start();
             } else {
                 System.err.println("Unsupported OS: " + osName);
             }
@@ -99,6 +110,7 @@ public class SpotifyAuthHandler {
             new CallbackServer(8080);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }

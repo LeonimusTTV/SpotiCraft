@@ -5,6 +5,8 @@ import fi.iki.elonen.NanoHTTPD;
 import java.io.IOException;
 import java.util.List;
 
+import static com.leonimust.spoticraft.SpotiCraft.LOGGER;
+
 public class CallbackServer extends NanoHTTPD {
 
     public CallbackServer(int port) throws IOException {
@@ -18,6 +20,7 @@ public class CallbackServer extends NanoHTTPD {
         List<String> code = session.getParameters().get("code");
         if (code != null) {
             System.out.println("Authorization code received: " + code);
+            LOGGER.info("Authorization code received: {}", code);
             // Exchange code for token
             new Thread(() -> {
                 try {
@@ -25,6 +28,8 @@ public class CallbackServer extends NanoHTTPD {
                     SpotifyAuthHandler.exchangeCodeForToken(code.getFirst());
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
+                    LOGGER.info(e.getMessage());
+                    throw new RuntimeException(e);
                 }
             }).start();
             return newFixedLengthResponse("Authorization successful! You can close this window.");

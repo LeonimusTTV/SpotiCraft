@@ -133,6 +133,32 @@ dependencies {
     implementation 'org.json:json:20231013'
     implementation 'se.michaelthelin.spotify:spotify-web-api-java:9.1.0'
 
+    //implementation 'org.apache.httpcomponents.client5:httpclient5:5.4.1'
+    //minecraftLibrary('org.apache.httpcomponents.core5:httpcore5:5.3.1')
+
+    jarJar('org.apache.httpcomponents.core5:httpcore5:5.3.1') {
+        jarJar.ranged(it, "[5.3,5.3.2)")
+    }
+
+    jarJar('com.squareup.okhttp3:okhttp:4.12.0') {
+        jarJar.ranged(it, "[4.12,4.12.1)")
+    }
+
+    jarJar('org.json:json:20231013') {
+        jarJar.ranged(it, "[20231013,20231015)")
+    }
+
+    jarJar('org.nanohttpd:nanohttpd:2.3.1') {
+        jarJar.ranged(it, "[2.3,2.4)")
+    }
+
+    jarJar('se.michaelthelin.spotify:spotify-web-api-java:9.1.0') {
+        jarJar.ranged(it, '[9.1,9.2)')
+    }
+
+    //implementation 'org.apache.httpcomponents.httpclient:4.5.14'
+    //jarJar 'org.apache.httpcomponents.httpclient:4.5.14'
+
     // Example mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
@@ -173,6 +199,7 @@ tasks.named('processResources', ProcessResources).configure {
 
 // Example for how to get properties into the manifest for reading at runtime.
 tasks.named('jar', Jar).configure {
+    archiveClassifier = 'slim'
     manifest {
         attributes([
             'Specification-Title'     : mod_id,
@@ -181,6 +208,31 @@ tasks.named('jar', Jar).configure {
             'Implementation-Title'    : project.name,
             'Implementation-Version'  : project.jar.archiveVersion,
             'Implementation-Vendor'   : mod_authors
+        ])
+    }
+}
+
+tasks.register('jarJarRelease') {
+    group = 'jarjar'
+    doLast {
+        tasks.jarJar {
+            archiveClassifier = ''
+        }
+    }
+    finalizedBy tasks.jarJar
+}
+
+jarJar.enable()
+
+tasks.named('jarJar', Jar).configure {
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : mod_authors,
+                'Specification-Version'   : '1', // We are version 1 of ourselves
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : mod_authors
         ])
     }
 }
