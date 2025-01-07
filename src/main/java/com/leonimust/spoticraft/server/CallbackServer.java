@@ -9,10 +9,14 @@ import static com.leonimust.spoticraft.SpotiCraft.LOGGER;
 
 public class CallbackServer extends NanoHTTPD {
 
-    public CallbackServer(int port) throws IOException {
+    public CallbackServer(int port) {
         super(port);
-        start(SOCKET_READ_TIMEOUT, false);
-        System.out.println("Callback server started on port " + port);
+        try {
+            start(SOCKET_READ_TIMEOUT, false);
+            System.out.println("Callback server started on port " + port);
+        } catch (IOException e) {
+            System.out.println("Port already used : " + port);
+        }
     }
 
     @Override
@@ -26,6 +30,8 @@ public class CallbackServer extends NanoHTTPD {
                 try {
                     //System.out.println(code.getFirst());
                     SpotifyAuthHandler.exchangeCodeForToken(code.getFirst());
+
+                    this.stop();
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     LOGGER.info(e.getMessage());

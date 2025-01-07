@@ -137,12 +137,13 @@ dependencies {
     //minecraftLibrary('org.apache.httpcomponents.core5:httpcore5:5.3.1')
 
     jarJar('org.apache.httpcomponents.core5:httpcore5:5.3.1') {
-        jarJar.ranged(it, "[5.3,5.3.2)")
+        jarJar.ranged(it, "[5.3,5.4)")
     }
 
-    jarJar('com.squareup.okhttp3:okhttp:4.12.0') {
-        jarJar.ranged(it, "[4.12,4.12.1)")
-    }
+    // for some reason this shit doesn't want to work :p
+    /*jarJar('com.squareup.okhttp3:okhttp:4.12.0') {
+        jarJar.ranged(it, "[4.12,4.13)")
+    }*/
 
     jarJar('org.json:json:20231013') {
         jarJar.ranged(it, "[20231013,20231015)")
@@ -156,8 +157,26 @@ dependencies {
         jarJar.ranged(it, '[9.1,9.2)')
     }
 
-    //implementation 'org.apache.httpcomponents.httpclient:4.5.14'
-    //jarJar 'org.apache.httpcomponents.httpclient:4.5.14'
+    // I need copium
+    //implementation 'org.apache.httpcomponents.client5:httpclient5:5.4.1'
+    jarJar('org.apache.httpcomponents.client5:httpclient5:5.4.1') {
+        jarJar.ranged(it, "[5.4,5.5)")
+    }
+
+    //implementation 'org.apache.httpcomponents.client5:httpclient5-cache:5.4.1'
+    jarJar('org.apache.httpcomponents.client5:httpclient5-cache:5.4.1') {
+        jarJar.ranged(it, "[5.4,5.5)")
+    }
+
+    jarJar('org.apache.httpcomponents.core5:httpcore5-h2:5.3.1') {
+        jarJar.ranged(it, "[5.3,5.4)")
+    }
+
+    jarJar('com.neovisionaries:nv-i18n:1.28') {
+        jarJar.ranged(it, "[1.28,1.29)")
+    }
+
+
 
     // Example mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

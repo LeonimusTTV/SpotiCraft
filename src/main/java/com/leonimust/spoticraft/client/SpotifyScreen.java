@@ -88,6 +88,7 @@ public class SpotifyScreen extends Screen {
 
         try {
             userPremium = spotifyApi.getCurrentUsersProfile().build().execute().getProduct() == ProductType.PREMIUM;
+            System.out.println(userPremium);
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             throw new RuntimeException(e);
         }

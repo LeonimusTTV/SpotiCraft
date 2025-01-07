@@ -1,20 +1,24 @@
 package com.leonimust.spoticraft.server;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 
-import com.leonimust.spoticraft.client.SpotifyScreen;
 import com.leonimust.spoticraft.client.TokenStorage;
-import net.minecraft.client.Minecraft;
-import okhttp3.*;
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import static com.leonimust.spoticraft.SpotiCraft.LOGGER;
 
+//TODO optimize this if I feel like I wanna do it :p
 public class SpotifyAuthHandler {
 
     // not the best way but 🤫
@@ -29,60 +33,106 @@ public class SpotifyAuthHandler {
     public static void exchangeCodeForToken(String code) {
         System.out.println("Exchange code for token: " + code);
         LOGGER.info("Exchange code for token: {}", code);
-        String url = BASE_URL + "/exchangeCodeForToken?code=" + code;
-        OkHttpClient client = new OkHttpClient();
-        LOGGER.info("client");
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-        LOGGER.info("request");
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                LOGGER.info("hmmmmmm");
-                assert response.body() != null;
-                JSONObject responseBody = new JSONObject(response.body().string());
+
+        String urlString = BASE_URL + "/exchangeCodeForToken?code=" + code;
+        LOGGER.info(urlString);
+
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URI(urlString).toURL();
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int responseCode = connection.getResponseCode();
+            LOGGER.info("Response code: {}", responseCode);
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                JSONObject responseBody = getJsonObject(connection);
+
                 System.out.println("Access token response: " + responseBody);
                 LOGGER.info("Access token response: {}", responseBody);
 
-                //refreshAccessToken(responseBody.getString("refresh_token"));
-                // Parse and store the access token
-                TokenStorage.saveToken(responseBody.getString("access_token"),
-                        responseBody.getString("refresh_token"), responseBody.getInt("expires_in"));
+                // Save the token data
+                TokenStorage.saveToken(
+                        responseBody.getString("access_token"),
+                        responseBody.getString("refresh_token"),
+                        responseBody.getInt("expires_in")
+                );
 
-                //spotifyScreen.loginSuccess();
-                //Minecraft.getInstance().setScreen(null);
-                //Minecraft.getInstance().setScreen(new SpotifyScreen());
+                // reset the screen so everything loads again with the access_token now available
+                Minecraft.getInstance().setScreen(null);
             } else {
-                System.err.println("Failed to exchange code: " + response.message());
-                LOGGER.info("Failed to exchange code: {}", response.message());
-                throw new RuntimeException("Failed to exchange code: " + response.message());
+                LOGGER.info("Failed to exchange code: {}", connection.getResponseMessage());
+                throw new RuntimeException("Failed to exchange code: " + connection.getResponseMessage());
             }
-        } catch (IOException e) {
-            LOGGER.info("Failed to execute request: {}", e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Failed to execute request: {}", e.getMessage());
             throw new RuntimeException(e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
     }
 
-    public static boolean refreshAccessToken(String refreshToken) throws IOException {
-        String url = BASE_URL + "/refreshToken?refresh_token=" + refreshToken;
+    private static @NotNull JSONObject getJsonObject(HttpURLConnection connection) throws IOException {
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)
+        );
+        StringBuilder responseBuilder = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            responseBuilder.append(line);
+        }
+        reader.close();
 
-        OkHttpClient client = new OkHttpClient();
+        String responseBodyString = responseBuilder.toString();
+        return new JSONObject(responseBodyString);
+    }
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+    public static boolean refreshAccessToken(String refreshToken) {
+        String urlString = BASE_URL + "/refreshToken?refresh_token=" + refreshToken;
+        LOGGER.info("Refreshing token with URL: {}", urlString);
 
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                assert response.body() != null;
-                JSONObject responseBody = new JSONObject(response.body().string());
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URI(urlString).toURL();
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int responseCode = connection.getResponseCode();
+            LOGGER.info("Response code: {}", responseCode);
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                JSONObject responseBody = getJsonObject(connection);
+
                 System.out.println("Refresh token response: " + responseBody);
+                LOGGER.info("Refresh token response: {}", responseBody);
+
                 // Parse and store the new access token
-                TokenStorage.saveToken(responseBody.getString("access_token"), refreshToken, responseBody.getInt("expires_in"));  // Store the new token
+                TokenStorage.saveToken(
+                        responseBody.getString("access_token"),
+                        refreshToken,
+                        responseBody.getInt("expires_in")
+                );
+
                 return responseBody.getBoolean("success");
             } else {
-                System.err.println("Failed to refresh token: " + response.message());
-                throw new RuntimeException("Failed to refresh token: " + response.message());
+                LOGGER.error("Failed to refresh token: {}", connection.getResponseMessage());
+                throw new RuntimeException("Failed to refresh token: " + connection.getResponseMessage());
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to execute request: {}", e.getMessage());
+            throw new RuntimeException(e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
             }
         }
     }
