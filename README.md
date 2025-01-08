@@ -3,6 +3,14 @@
 This is the **offcial** repo for this mod -> https://www.curseforge.com/minecraft/mc-mods/spoticraft-2 \
 Another also called SpotiCraft exist, it's not maintained anymore but you can always go check it -> https://github.com/IMB11/Spoticraft/tree/master (fabric only)
 
+## Table of Content
+[Description](#description)\
+[TODO List](#todo-list)\
+[Version List](#version-list)\
+[API](#api)\
+[How to build the mod](#how-to-build-the-mod)\
+[Changelog](#changelog)
+
 ## Description
 SpotiCraft allow you to connect into your Spotify account and play your favorite music, playlist, artist or even search for new song all in Minecraft :3 (Spotify **Premium** is **required** to use this mod!)
 
@@ -15,12 +23,20 @@ SpotiCraft allow you to connect into your Spotify account and play your favorite
 - UI in general - WIP
 
 ## Version List
-Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.19, that's my goal, version before 1.19 will not be surpported, at least for now.
+Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.19, version before 1.19 will not be surpported, at least for now.
 | Minecraft version | Mod version | Link |
 |---|---|---|
 | 1.21.4 | 0.0.2-alpha (current) | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
 | 1.21.3 to 1.19 | - | - |
 | later than 1.19 | Not planned to be supported | - |
+
+## API
+[SpotifyAuthHandler.java](https://github.com/LeonimusTTV/SpotiCraft/blob/master/src/main/java/com/leonimust/spoticraft/server/SpotifyAuthHandler.java#L31) user an API to get the access_token, if you wanna use yours you got the [repo here](https://github.com/LeonimusTTV/SpotiCraft-Web) if you want an example.
+
+## How to build the mod
+Install [JAVA 21](https://adoptium.net/temurin/releases/)\
+Use JAVA 21 as your JDK\
+Build and enjoy :3
 
 ## Changelog
 Alpha 0.0.2
