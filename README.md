@@ -1,7 +1,7 @@
 # SpotiCraft - A new way of listening to music
 
 This is the **offcial** repo for this mod -> https://www.curseforge.com/minecraft/mc-mods/spoticraft-2 \
-Another also called SpotiCraft exist, it's not maintenanted anymore but you can always go check it -> https://github.com/IMB11/Spoticraft/tree/master (fabric only)
+Another also called SpotiCraft exist, it's not maintained anymore but you can always go check it -> https://github.com/IMB11/Spoticraft/tree/master (fabric only)
 
 ## Description
 SpotiCraft allow you to connect into your Spotify account and play your favorite music, playlist, artist or even search for new song all in Minecraft :3 (Spotify **Premium** is **required** to use this mod!)
@@ -20,7 +20,7 @@ Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.
 |---|---|---|
 | 1.21.4 | 0.0.2-alpha (current) | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
 | 1.21.3 to 1.19 | - | - |
-| later than 1.19 | Will probably never be supported | - |
+| later than 1.19 | Not planned to be supported | - |
 
 ## Changelog
 Alpha 0.0.2
