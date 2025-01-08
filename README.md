@@ -34,7 +34,7 @@ Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.
 [SpotifyAuthHandler.java](https://github.com/LeonimusTTV/SpotiCraft/blob/master/src/main/java/com/leonimust/spoticraft/server/SpotifyAuthHandler.java#L31) use an API to get the access_token and refresh it, if you wanna use yours you can get the [repo here](https://github.com/LeonimusTTV/SpotiCraft-Web) if you want an example.
 
 ## How to build the mod
-Install [JAVA 21](https://adoptium.net/temurin/releases/)\
+Install [JAVA 21](https://adoptium.net/temurin/releases/) JDK\
 Use JAVA 21 as your JDK\
 Build and enjoy :3
 
