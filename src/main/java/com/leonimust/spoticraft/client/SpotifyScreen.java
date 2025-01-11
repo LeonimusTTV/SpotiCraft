@@ -18,9 +18,7 @@ import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.leonimust.spoticraft.client.TokenStorage.token;
@@ -62,6 +60,8 @@ public class SpotifyScreen extends Screen {
     private int volumeBarWidth;
     private final int volumeBarHeight = 7;
     private int currentVolume = 50;
+
+    private ScrollableContainer scrollableContainer;
 
     @Override
     public void init() {
@@ -158,6 +158,38 @@ public class SpotifyScreen extends Screen {
     }
 
     private void mainScreen() {
+
+        List<String> textContent = Arrays.asList(
+                "Line 1: Example Text",
+                "Line 2: Another Line",
+                "Line 3: Scrollable Content",
+                "Line 4: More Text Here",
+                "Line 5: Keep Scrolling!",
+                "Line 6: Almost There...1",
+                "Line 7: The End",
+                "Line 6: Almost There...2",
+                "Line 7: The End",
+                "Line 6: Almost There...3",
+                "Line 7: The End",
+                "Line 6: Almost There...4",
+                "Line 7: The End",
+                "Line 6: Almost There...5",
+                "Line 7: The End",
+                "Line 6: Almost There...6",
+                "Line 7: The End",
+                "Line 6: Almost There...",
+                "Line 7: The End2"
+        );
+
+        int containerWidth = this.width / 2;
+        int containerHeight = this.height / 2;
+        int containerX = (this.width - containerWidth) / 2;
+        int containerY = (this.height - containerHeight) / 4;
+
+        if (scrollableContainer == null) {
+            scrollableContainer = new ScrollableContainer(containerX, containerY, containerWidth, containerHeight, this.font, textContent);
+            this.addRenderableWidget(scrollableContainer);
+        }
 
         if (musicImage != null) {
             int imageWidth = 50;
@@ -516,6 +548,14 @@ public class SpotifyScreen extends Screen {
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollAmount, double deltaY) {
+        if (scrollableContainer != null) {
+            scrollableContainer.scroll((int) -deltaY);
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollAmount, deltaY);
+    }
 
     // ui controls
     private void toggleMusicPlayback() throws InterruptedException {
