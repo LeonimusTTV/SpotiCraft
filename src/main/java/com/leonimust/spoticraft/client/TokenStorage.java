@@ -1,5 +1,6 @@
 package com.leonimust.spoticraft.client;
 
+import com.leonimust.spoticraft.client.ui.SpotifyScreen;
 import com.leonimust.spoticraft.server.SpotifyAuthHandler;
 import net.minecraft.client.Minecraft;
 import org.json.JSONObject;

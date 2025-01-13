@@ -1,6 +1,7 @@
 package com.leonimust.spoticraft.client;
 
 import com.leonimust.spoticraft.SpotiCraft;
+import com.leonimust.spoticraft.client.ui.SpotifyScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;

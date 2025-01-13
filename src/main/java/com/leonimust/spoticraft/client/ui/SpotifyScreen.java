@@ -1,12 +1,10 @@
-package com.leonimust.spoticraft.client;
+package com.leonimust.spoticraft.client.ui;
 
 import com.leonimust.spoticraft.SpotiCraft;
-import com.leonimust.spoticraft.client.ui.*;
+import com.leonimust.spoticraft.client.TokenStorage;
 import com.leonimust.spoticraft.server.SpotifyAuthHandler;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.CommonComponents;
@@ -19,7 +17,6 @@ import se.michaelthelin.spotify.model_objects.miscellaneous.CurrentlyPlayingCont
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 
 import static com.leonimust.spoticraft.client.TokenStorage.token;
 
@@ -61,7 +58,9 @@ public class SpotifyScreen extends Screen {
     private final int volumeBarHeight = 7;
     private int currentVolume = 50;
 
-    private ScrollableContainer scrollableContainer;
+    private ItemScrollPanel scrollPanel;
+
+    private List<Item> items;
 
     @Override
     public void init() {
@@ -92,6 +91,44 @@ public class SpotifyScreen extends Screen {
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             throw new RuntimeException(e);
         }
+
+        items = List.of(
+                new Item(
+                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
+                        "Test",
+                        "Playlist - LeonimusT",
+                        this.font),
+                new Item(
+                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
+                        "Test2",
+                        "Playlist - LeonimusT",
+                        this.font),
+                new Item(
+                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
+                        "Test3",
+                        "Playlist - LeonimusT",
+                        this.font),
+                new Item(
+                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
+                        "Test4",
+                        "Playlist - LeonimusT",
+                        this.font),
+                new Item(
+                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
+                        "Test5",
+                        "Playlist - LeonimusT",
+                        this.font),
+                new Item(
+                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
+                        "Test6",
+                        "Playlist - LeonimusT",
+                        this.font),
+                new Item(
+                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
+                        "Test7",
+                        "Playlist - LeonimusT",
+                        this.font)
+        );
 
         // Sync playback state when the screen is opened
         syncData();
@@ -159,55 +196,11 @@ public class SpotifyScreen extends Screen {
 
     private void mainScreen() {
 
-        List<String> textContent = Arrays.asList(
-                "Line 1: Example Text",
-                "Line 2: Another Line",
-                "Line 3: Scrollable Content",
-                "Line 4: More Text Here",
-                "Line 5: Keep Scrolling!",
-                "Line 6: Almost There...1",
-                "Line 7: The End",
-                "Line 6: Almost There...2",
-                "Line 7: The End",
-                "Line 6: Almost There...3",
-                "Line 7: The End",
-                "Line 6: Almost There...4",
-                "Line 7: The End",
-                "Line 6: Almost There...5",
-                "Line 7: The End",
-                "Line 6: Almost There...6",
-                "Line 7: The End",
-                "Line 6: Almost There...",
-                "Line 7: The End2"
-        );
-
-        int containerWidth = this.width / 2;
-        int containerHeight = this.height / 2;
-        int containerX = (this.width - containerWidth) / 2;
-        int containerY = (this.height - containerHeight) / 4;
-
-        if (scrollableContainer == null) {
-            scrollableContainer = new ScrollableContainer(containerX, containerY, containerWidth, containerHeight, this.font, textContent);
-            this.addRenderableWidget(scrollableContainer);
-        }
-
         if (musicImage != null) {
             int imageWidth = 50;
             int imageHeight = 50;
 
-            RenderSystem.setShaderTexture(0, musicImage); // Bind the texture
-            Function<ResourceLocation, RenderType> renderType = RenderType::guiTextured;
-            graphics.blit(
-                    renderType,
-                    musicImage,
-                    5,
-                    this.height - imageHeight - 5,
-                    0,
-                    0,
-                    imageWidth,
-                    imageHeight,
-                    imageWidth,
-                    imageHeight);
+            ImageHandler.drawImage(graphics, musicImage, this.height, imageHeight, imageWidth);
         }
 
         //Minecraft ImageButton is shit and doesn't work ;_; thanks for the 4 hours of lost time xD
@@ -291,13 +284,6 @@ public class SpotifyScreen extends Screen {
                 }
         );
 
-        /*new PlaylistItem(
-                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
-                "Test",
-                "Playlist - LeonimusT",
-                this.font,
-                graphics, this.width / 2, this.height / 2).draw();*/
-
         previousButton.setActive(!shuffleState);
 
         if (shuffleButton == null) {
@@ -357,13 +343,21 @@ public class SpotifyScreen extends Screen {
                     }
             );
         }
-        // Add the button to the screen
+
+        // Add everything to the screen
         this.addRenderableWidget(playStopButton);
 
         this.addRenderableWidget(previousButton);
         this.addRenderableWidget(nextButton);
         this.addRenderableWidget(shuffleButton);
         this.addRenderableWidget(repeatButton);
+
+        if (scrollPanel == null) {
+            scrollPanel = new ItemScrollPanel(this.minecraft, this.width / 4,this.height - 70, 5, 5);
+
+            scrollPanel.setInfo(items);
+            this.addRenderableWidget(scrollPanel);
+        }
 
         textManager.drawText(graphics);
 
@@ -548,14 +542,10 @@ public class SpotifyScreen extends Screen {
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
-    @Override
+    /*@Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollAmount, double deltaY) {
-        if (scrollableContainer != null) {
-            scrollableContainer.scroll((int) -deltaY);
-            return true;
-        }
-        return super.mouseScrolled(mouseX, mouseY, scrollAmount, deltaY);
-    }
+        return scrollPanel.mouseScrolled(mouseX, mouseY, scrollAmount, deltaY) || super.mouseScrolled(mouseX, mouseY, scrollAmount, deltaY);
+    }*/
 
     // ui controls
     private void toggleMusicPlayback() throws InterruptedException {
@@ -594,7 +584,7 @@ public class SpotifyScreen extends Screen {
     }
 
     public void loadMusicImage(String url) {
-        musicImage = SpotifyImageHandler.downloadImage(url); // Download and set the image
+        musicImage = ImageHandler.downloadImage(url); // Download and set the image
     }
 
     private boolean changePositionInCurrentTrack() {

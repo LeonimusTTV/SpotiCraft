@@ -2,7 +2,10 @@ package com.leonimust.spoticraft.client.ui;
 
 import com.leonimust.spoticraft.SpotiCraft;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.io.IOUtils;
@@ -15,8 +18,9 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.Function;
 
-public class SpotifyImageHandler {
+public class ImageHandler {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final HashMap<String, ResourceLocation> CACHE = new HashMap<>();
     private static final File CACHE_DIR = new File(MC.gameDirectory, "spoticraft/cache");
@@ -28,6 +32,22 @@ public class SpotifyImageHandler {
                 throw new RuntimeException("Unable to create directory " + CACHE_DIR);
             }
         }
+    }
+
+    public static void drawImage(GuiGraphics graphics, ResourceLocation musicImage, int height, int imageHeight, int imageWidth) {
+        RenderSystem.setShaderTexture(0, musicImage); // Bind the texture
+        Function<ResourceLocation, RenderType> renderType = RenderType::guiTextured;
+        graphics.blit(
+                renderType,
+                musicImage,
+                5,
+                height - imageHeight - 5,
+                0,
+                0,
+                imageWidth,
+                imageHeight,
+                imageWidth,
+                imageHeight);
     }
 
     public static ResourceLocation downloadImage(String url) {
