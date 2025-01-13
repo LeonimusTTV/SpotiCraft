@@ -24,11 +24,11 @@ SpotiCraft allow you to connect into your Spotify account and play your favorite
 
 ## Version List
 Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.19, version before 1.19 will not be surpported, at least for now.
-| Minecraft version | Mod version | Link |
-|---|---|---|
-| 1.21.4 | 0.0.2-alpha (current) | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
-| 1.21.3 to 1.19 | - | - |
-| before 1.19 | Not planned to be supported | - |
+| Minecraft version | Mod version | Mod Loader | Link |
+|---|---|---|---|
+| 1.21.4 | 0.0.2-alpha (current) | Forge | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
+| 1.21.3 to 1.19 | - | Forge + NeoForge (1.20.2) | - |
+| before 1.19 | Not planned to be supported | - |  - |
 
 ## API
 [SpotifyAuthHandler.java](https://github.com/LeonimusTTV/SpotiCraft/blob/master/src/main/java/com/leonimust/spoticraft/server/SpotifyAuthHandler.java#L31) use an API to get the access_token and refresh it, if you wanna use yours you can get the [repo here](https://github.com/LeonimusTTV/SpotiCraft-API) if you want an example.
