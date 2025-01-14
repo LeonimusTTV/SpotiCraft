@@ -14,6 +14,8 @@ import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.enums.ProductType;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
+import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 
 import java.io.IOException;
 import java.util.*;
@@ -60,7 +62,7 @@ public class SpotifyScreen extends Screen {
 
     private ItemScrollPanel scrollPanel;
 
-    private List<Item> items;
+    private final List<Item> items = new ArrayList<>();
 
     @Override
     public void init() {
@@ -91,44 +93,6 @@ public class SpotifyScreen extends Screen {
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             throw new RuntimeException(e);
         }
-
-        items = List.of(
-                new Item(
-                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
-                        "Test",
-                        "Playlist - LeonimusT",
-                        this.font),
-                new Item(
-                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
-                        "Test2",
-                        "Playlist - LeonimusT",
-                        this.font),
-                new Item(
-                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
-                        "Test3",
-                        "Playlist - LeonimusT",
-                        this.font),
-                new Item(
-                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
-                        "Test4",
-                        "Playlist - LeonimusT",
-                        this.font),
-                new Item(
-                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
-                        "Test5",
-                        "Playlist - LeonimusT",
-                        this.font),
-                new Item(
-                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
-                        "Test6",
-                        "Playlist - LeonimusT",
-                        this.font),
-                new Item(
-                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png"),
-                        "Test7",
-                        "Playlist - LeonimusT",
-                        this.font)
-        );
 
         // Sync playback state when the screen is opened
         syncData();
@@ -352,7 +316,7 @@ public class SpotifyScreen extends Screen {
         this.addRenderableWidget(shuffleButton);
         this.addRenderableWidget(repeatButton);
 
-        if (scrollPanel == null) {
+        if (scrollPanel == null && items != null) {
             scrollPanel = new ItemScrollPanel(this.minecraft, this.width / 4,this.height - 70, 5, 5);
 
             scrollPanel.setInfo(items);
@@ -399,7 +363,6 @@ public class SpotifyScreen extends Screen {
                 //trackIndex = trackList.;
                 lastUpdateTime = System.currentTimeMillis() - 500; // Sync the timer with Spotify's state and add a lil more because of the request time
                 // cache track image url so doesn't need to ask spotify api and avoid 304 Not Modified responses
-                System.out.println("track : " + trackCache.get(context.getItem().getId()));
                 if (trackCache.get(context.getItem().getId()) != null) {
                     loadMusicImage(trackCache.get(context.getItem().getId()));
                 } else {
@@ -411,6 +374,26 @@ public class SpotifyScreen extends Screen {
 
                 if (repeatButton != null) {
                     repeatButton.setTooltip(trackIndex == 0 ? "gui.spoticraft.enable_repeat" : trackIndex == 1 ? "gui.spoticraft.enable_repeat_one" : "gui.spoticraft.disable_repeat");
+                }
+
+                //playlist
+                final Paging<PlaylistSimplified> playlistSimplifiedPaging = spotifyApi.getListOfCurrentUsersPlaylists().build().execute();
+
+                items.clear();
+                scrollPanel.clearInfo();
+
+                for (PlaylistSimplified playlist : playlistSimplifiedPaging.getItems()) {
+                    ResourceLocation playlistImage;
+                    if (playlist.getImages() == null) {
+                        playlistImage = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/next.png");
+                    } else {
+                        playlistImage = ImageHandler.downloadImage(playlist.getImages()[0].getUrl());
+                    }
+
+                    items.add(new Item(
+                            playlistImage,
+                            playlist.getName(),
+                            this.font));
                 }
             }
         } catch (Exception e) {

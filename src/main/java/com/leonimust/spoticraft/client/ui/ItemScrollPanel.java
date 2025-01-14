@@ -1,5 +1,6 @@
 package com.leonimust.spoticraft.client.ui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,25 +31,24 @@ public class ItemScrollPanel extends ScrollPanel {
     @Override
     public int getContentHeight() {
         int height = items.size() * itemHeight;
-        if (height < this.bottom - this.top - 15) {
-            height = this.bottom - this.top - 15;
+        if (height < this.bottom - this.top - 8) {
+            height = this.bottom - this.top - 8;
         }
         return height;
     }
 
     @Override
     protected int getScrollAmount() {
-        return itemHeight;
+        return itemHeight*3;
     }
 
     @Override
     protected void drawPanel(GuiGraphics guiGraphics, int entryRight, int relativeY, Tesselator tess, int mouseX, int mouseY) {
-        int baseY = relativeY;
         for (Item item : items) {
             if (item != null) {
-                item.draw(left, baseY, guiGraphics);
+                item.draw(left, relativeY, guiGraphics);
             }
-            baseY += itemHeight;
+            relativeY += itemHeight;
         }
     }
     @Override
