@@ -380,7 +380,10 @@ public class SpotifyScreen extends Screen {
                 final Paging<PlaylistSimplified> playlistSimplifiedPaging = spotifyApi.getListOfCurrentUsersPlaylists().build().execute();
 
                 items.clear();
-                scrollPanel.clearInfo();
+
+                if (scrollPanel != null) {
+                    scrollPanel.clearInfo();
+                }
 
                 for (PlaylistSimplified playlist : playlistSimplifiedPaging.getItems()) {
                     ResourceLocation playlistImage;
