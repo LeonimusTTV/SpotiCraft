@@ -172,12 +172,18 @@ public class SpotifyScreen extends Screen {
             playlistPanel = new ItemScrollPanel(this.minecraft, this.width / 3,this.height - 64, 20, 5);
             // useful for first init
             playlistPanel.setInfo(playlistItems);
+            // don't move this line down, if minecraft keep refreshing this panel and that the items list changes
+            // it will crash the game
+            this.addRenderableWidget(playlistPanel);
         }
 
         if (mainPanel == null) {
             mainPanel = new ItemScrollPanel(this.minecraft, this.width - this.width / 3 - 15,this.height - 65, 20, this.width/3+10);
-
+            // useful for first init
             mainPanel.setInfo(mainItems);
+            // don't move this line down, if minecraft keep refreshing this panel and that the items list changes
+            // it will crash the game
+            this.addRenderableWidget(mainPanel);
         }
 
         if (musicImage != null) {
@@ -349,9 +355,6 @@ public class SpotifyScreen extends Screen {
         this.addRenderableWidget(nextButton);
         this.addRenderableWidget(shuffleButton);
         this.addRenderableWidget(repeatButton);
-        // for some reason if put enter playStopButton, the button won't show his image 🤷‍♂️
-        this.addRenderableWidget(playlistPanel);
-        this.addRenderableWidget(mainPanel);
 
         textManager.drawText(graphics);
 
@@ -438,6 +441,10 @@ public class SpotifyScreen extends Screen {
 
                 playlistItems.clear();
 
+                if (playlistPanel != null) {
+                    playlistPanel.clear();
+                }
+
                 for (PlaylistSimplified playlist : playlistSimplifiedPaging.getItems()) {
                     ResourceLocation playlistImage;
                     if (playlist.getImages() == null) {
@@ -449,6 +456,8 @@ public class SpotifyScreen extends Screen {
                     playlistItems.add(new Item(
                             playlistImage,
                             resizeText(playlist.getName(), 17),
+                            playlist.getUri(),
+                            Item.itemType.TRACK,
                             this.font));
                 }
 
@@ -456,6 +465,8 @@ public class SpotifyScreen extends Screen {
                 playlistItems.add(new Item(
                         ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
                         "",
+                        "",
+                        Item.itemType.EMPTY,
                         this.font
                 ));
 
@@ -562,12 +573,16 @@ public class SpotifyScreen extends Screen {
             mainItems.add(new Item(
                     trackImage,
                     resizeText(track.getName(), 40),
+                    track.getUri(),
+                    Item.itemType.TRACK,
                     this.font));
         }
 
         mainItems.add(new Item(
                 ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
                 "",
+                "",
+                Item.itemType.EMPTY,
                 this.font
         ));
 

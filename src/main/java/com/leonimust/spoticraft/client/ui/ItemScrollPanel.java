@@ -5,8 +5,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraftforge.client.gui.widget.ScrollPanel;
+import org.apache.hc.core5.http.ParseException;
 import org.jetbrains.annotations.NotNull;
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +24,10 @@ public class ItemScrollPanel extends ScrollPanel {
 
     public void setInfo(List<Item> content) {
         this.items = content;
+    }
+
+    public void clear() {
+        items.clear();
     }
 
     @Override
@@ -60,7 +67,11 @@ public class ItemScrollPanel extends ScrollPanel {
             for (Item item : items) {
                 if (item != null) {
                     if (item.isMouseOver((int) mouseX, (int) mouseY, left, relativeY)) {
-                        item.onClick(); // Trigger the item's click action
+                        try {
+                            item.onClick(); // Trigger the item's click action
+                        } catch (IOException | ParseException | SpotifyWebApiException e) {
+                            throw new RuntimeException(e);
+                        }
                         return true;
                     }
                 }

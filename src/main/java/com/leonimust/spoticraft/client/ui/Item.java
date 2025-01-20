@@ -5,8 +5,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.hc.core5.http.ParseException;
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 
-import java.util.Objects;
+import java.io.IOException;
 import java.util.function.Function;
 
 public class Item {
@@ -14,11 +16,21 @@ public class Item {
     private final ResourceLocation image;
     private final String name;
     private final Font font;
+    private final String itemId;
+    private final itemType type;
+    public enum itemType {
+        PLAYLIST,
+        ALBUM,
+        TRACK,
+        EMPTY
+    }
 
-    public Item(ResourceLocation image, String playlistName, Font font) {
+    public Item(ResourceLocation image, String playlistName, String id, itemType type, Font font) {
         this.image = image;
         this.name = playlistName;
         this.font = font;
+        this.itemId = id;
+        this.type = type;
     }
 
     public void draw(int x, int y, GuiGraphics graphics) {
@@ -51,12 +63,23 @@ public class Item {
                 && mouseY >= y && mouseY <= y + imageHeight;
     }
 
-    public void onClick() {
-        // means it's the empty item and we should skip it
-        if (Objects.equals(this.name, "")) {
+    public void onClick() throws IOException, ParseException, SpotifyWebApiException {
+        // empty object skip
+        if (type == itemType.EMPTY) {
             return;
         }
 
         System.out.println("Item clicked: " + name);
+        System.out.println("Item id: " + itemId);
+        System.out.println("Item type: " + type);
+
+        // play the music
+        if (type == itemType.TRACK) {
+            // probably a better way to do this tbh
+            SpotifyScreen.spotifyApi.addItemToUsersPlaybackQueue(this.itemId).build().execute();
+            SpotifyScreen.spotifyApi.skipUsersPlaybackToNextTrack().build().execute();
+            //update the ui
+            //SpotifyScreen.syncData();
+        }
     }
 }
