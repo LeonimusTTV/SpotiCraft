@@ -24,8 +24,8 @@ public class Item {
     public void draw(int x, int y, GuiGraphics graphics) {
         RenderSystem.setShaderTexture(0, image); // Bind the texture
         Function<ResourceLocation, RenderType> renderType = RenderType::guiTextured;
-        int imageHeight = 40;
-        int imageWidth = 40;
+        int imageHeight = 30;
+        int imageWidth = 30;
 
         graphics.blit(
                 renderType,
@@ -40,5 +40,23 @@ public class Item {
                 imageHeight);
 
         graphics.drawString(font, name, x + imageWidth + 5, y + 10, 16777215);
+    }
+
+    public boolean isMouseOver(int mouseX, int mouseY, int x, int y) {
+        int imageHeight = 30;
+        int imageWidth = 30;
+
+        // Check if the mouse coordinates are within the item's bounds
+        return mouseX >= x && mouseX <= x + imageWidth + 5 + font.width(name)
+                && mouseY >= y && mouseY <= y + imageHeight;
+    }
+
+    public void onClick() {
+        // means it's the empty item and we should skip it
+        if (Objects.equals(this.name, "")) {
+            return;
+        }
+
+        System.out.println("Item clicked: " + name);
     }
 }
