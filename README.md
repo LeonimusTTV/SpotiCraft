@@ -18,7 +18,7 @@ SpotiCraft allow you to connect into your Spotify account and play your favorite
 - Login - Finished
 - Play music (play, pause, next, previous, shuffle, repeat, volume) - Finished
 - Playlist (private or public) - WIP
-- Search for music, artist or playlist - TODO
+- Search for music, artist or playlist - WIP
 - Artist page (show music of artist, playable music) - TODO
 - UI in general - WIP
 
