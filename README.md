@@ -17,10 +17,12 @@ SpotiCraft allow you to connect into your Spotify account and play your favorite
 ## TODO List
 - Login - Finished
 - Play music (play, pause, next, previous, shuffle, repeat, volume) - Finished
-- Playlist (private or public) - WIP
-- Search for music, artist or playlist - WIP
-- Artist page (show music of artist, playable music) - TODO
+- Playlist (edit, play, etc) - Finished
+- Search for music, artist or playlist - Finished
+- Artist page (show music of artist, playable music) - Finished
+- Album, play music - Finished
 - UI in general - WIP
+- Improvement - WIP
 
 ## Version List
 Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.19, version before 1.19 will not be surpported, at least for now.
