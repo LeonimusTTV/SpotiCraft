@@ -26,10 +26,6 @@ public class ItemScrollPanel extends ScrollPanel {
         this.items = content;
     }
 
-    public void clear() {
-        items.clear();
-    }
-
     @Override
     public int getContentHeight() {
         // -1 because of the empty item

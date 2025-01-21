@@ -8,14 +8,16 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
-import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Function;
@@ -54,9 +56,11 @@ public class ImageHandler {
 
     public static ResourceLocation downloadImage(String url) {
         try {
-            LOGGER.info("Downloading image from {}", url);
+            LOGGER.info("downloadImage called for {}", url);
+
             // Check cache first
             if (CACHE.containsKey(url)) {
+                LOGGER.info("cache");
                 return CACHE.get(url);
             }
 
@@ -66,25 +70,30 @@ public class ImageHandler {
 
             // Check if the image is already downloaded
             if (cachedFile.exists()) {
+                LOGGER.info("Image found in cache: {}", cachedFile.getAbsolutePath());
                 return loadFromDisk(cachedFile, url);
             }
 
             // Download the image
             URL imageUrl = new URI(url).toURL();
-            InputStream inputStream = imageUrl.openStream();
-            BufferedImage bufferedImage = ImageIO.read(inputStream);
-            IOUtils.closeQuietly(inputStream);
+            try (InputStream inputStream = imageUrl.openStream()) {
+                Files.copy(inputStream, cachedFile.toPath());
+            }
 
-            // Save the image to disk
-            ImageIO.write(bufferedImage, "png", cachedFile);
+            LOGGER.info("Downloaded image to {}", cachedFile.getAbsolutePath());
 
-            LOGGER.info("Writing image to cache : {}", cachedFile.getAbsolutePath());
+            // Check if the file is a WebP image
+            if (isWebP(cachedFile)) {
+                LOGGER.info("Image is a WebP file, converting to PNG...");
+                File pngFile = convertWebPToPng(cachedFile);
+                return loadFromDisk(pngFile, url);
+            }
 
-            // Load the image and cache it
+            // If not WebP, load the file directly
             return loadFromDisk(cachedFile, url);
 
         } catch (Exception e) {
-            LOGGER.error("Failed to load image from {}: {}", url, e.getMessage());
+            LOGGER.error("Failed to load image from {}: {}", url, e.getMessage(), e);
             return null; // Return null if something goes wrong
         }
     }
@@ -122,5 +131,43 @@ public class ImageHandler {
         }
 
         return nativeImage;
+    }
+
+    /**
+     * Checks if the file is a WebP image by inspecting its magic bytes.
+     */
+    private static boolean isWebP(File file) {
+        try (InputStream inputStream = new FileInputStream(file)) {
+            byte[] magicBytes = inputStream.readNBytes(12); // Properly read the first 12 bytes
+            String header = new String(magicBytes, StandardCharsets.US_ASCII);
+            return header.contains("WEBP");
+        } catch (Exception e) {
+            LOGGER.error("Error checking WebP format: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Converts a WebP file to PNG using the dwebp command-line tool.
+     */
+    private static File convertWebPToPng(File webpFile) throws Exception {
+        String pngFileName = webpFile.getName().replace(".webp", ".png");
+        File pngFile = new File(webpFile.getParent(), pngFileName);
+
+        Process process = new ProcessBuilder("dwebp", webpFile.getAbsolutePath(), "-o", pngFile.getAbsolutePath())
+                .redirectErrorStream(true)
+                .start();
+
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            try (InputStream errorStream = process.getInputStream()) {
+                String errorMessage = new String(errorStream.readAllBytes(), StandardCharsets.UTF_8);
+                LOGGER.error("Failed to convert WebP to PNG: {}", errorMessage);
+            }
+            throw new RuntimeException("Failed to convert WebP image to PNG. Exit code: " + exitCode);
+        }
+
+        LOGGER.info("Converted WebP to PNG: {}", pngFile.getAbsolutePath());
+        return pngFile;
     }
 }

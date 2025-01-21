@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.leonimust.spoticraft.client.TokenStorage.token;
 
+//TODO add the check before all spotifyApi call
 public class SpotifyScreen extends Screen {
     private static SpotifyScreen instance;
 
@@ -379,7 +380,7 @@ public class SpotifyScreen extends Screen {
     }
 
     public void syncDataWithDelay() throws InterruptedException {
-        Thread.sleep(250);
+        Thread.sleep(500);
         syncData();
     }
 
@@ -406,7 +407,7 @@ public class SpotifyScreen extends Screen {
                     }
                 }
                 //trackIndex = trackList.;
-                lastUpdateTime = System.currentTimeMillis() - 500; // Sync the timer with Spotify's state and add a lil more because of the request time
+                lastUpdateTime = System.currentTimeMillis() - 700; // Sync the timer with Spotify's state and add a lil more because of the request time
 
                 // cache track image url so doesn't need to ask spotify api and avoid 304 Not Modified responses
                 if (trackCache.get(context.getItem().getId()) != null) {
@@ -444,10 +445,6 @@ public class SpotifyScreen extends Screen {
                 Paging<SavedAlbum> savedAlbumPaging = spotifyApi.getCurrentUsersSavedAlbums().build().execute();
 
                 playlistItems.clear();
-
-                if (playlistPanel != null) {
-                    playlistPanel.clear();
-                }
 
                 playlistItems.add(new Item(
                         ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/liked_songs.png"),
@@ -791,7 +788,16 @@ public class SpotifyScreen extends Screen {
 
         System.out.println(Arrays.toString(tracks.getItems()));
 
-        mainPanel.clear();
+        mainItems.clear();
+
+        mainItems.add(new Item(
+                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/play.png"),
+                "Play Album",
+                "",
+                Item.itemType.PLAY_ALBUM,
+                albumContext,
+                this.font
+        ));
 
         for (TrackSimplified track : tracks.getItems()) {
             showTrack(track.getId(), track.getUri(), track.getName(), albumContext);
@@ -843,7 +849,7 @@ public class SpotifyScreen extends Screen {
     public void showLikedTracks() throws IOException, ParseException, SpotifyWebApiException {
         Paging<SavedTrack> tracks = spotifyApi.getUsersSavedTracks().build().execute();
 
-        mainPanel.clear();
+        mainItems.clear();
 
         for (SavedTrack savedTrack : tracks.getItems()) {
             Track track = savedTrack.getTrack();
@@ -863,8 +869,37 @@ public class SpotifyScreen extends Screen {
 
     public void showArtist(String artistId) throws IOException, ParseException, SpotifyWebApiException {
         Track[] tracks = spotifyApi.getArtistsTopTracks(artistId, userCountryCode).build().execute();
+        Paging<AlbumSimplified> albums = spotifyApi.getArtistsAlbums(artistId).build().execute();
 
-        System.out.println(Arrays.toString(tracks));
+        mainItems.clear();
+
+        for (Track track : tracks) {
+            showTrack(track.getId(), track.getUri(), track.getName(), "");
+        }
+
+        for (int i = 0; i < Math.min(5, albums.getItems().length); i++) {
+            AlbumSimplified album = albums.getItems()[i];
+            ResourceLocation albumImage = getImage(album.getImages() == null ? null : album.getImages()[0].getUrl());
+
+            mainItems.add(new Item(
+                    albumImage,
+                    resizeText(album.getName(), 17),
+                    album.getId(),
+                    Item.itemType.ALBUM,
+                    album.getUri(),
+                    this.font
+            ));
+        }
+
+        mainItems.add(new Item(
+                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
+                "",
+                "",
+                Item.itemType.EMPTY,
+                "",
+                this.font
+        ));
+        mainPanel.setInfo(mainItems);
     }
 
     // other

@@ -32,9 +32,9 @@ public class Item {
         EMPTY
     }
 
-    public Item(ResourceLocation image, String playlistName, String id, itemType type, String contextId, Font font) {
+    public Item(ResourceLocation image, String name, String id, itemType type, String contextId, Font font) {
         this.image = image;
-        this.name = playlistName;
+        this.name = name;
         this.font = font;
         this.itemUri = id;
         this.type = type;
