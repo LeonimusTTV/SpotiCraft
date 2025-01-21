@@ -3,6 +3,7 @@ package com.leonimust.spoticraft.client.ui;
 import com.leonimust.spoticraft.SpotiCraft;
 import com.leonimust.spoticraft.client.TokenStorage;
 import com.leonimust.spoticraft.server.SpotifyAuthHandler;
+import com.neovisionaries.i18n.CountryCode;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -26,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import static com.leonimust.spoticraft.client.TokenStorage.token;
 
 public class SpotifyScreen extends Screen {
+    private static SpotifyScreen instance;
 
     private GuiGraphics graphics;
     private int totalDurationMs;
@@ -47,6 +49,7 @@ public class SpotifyScreen extends Screen {
     private final int barHeight = 4;
 
     private boolean userPremium = false;
+    private CountryCode userCountryCode;
 
     private TextManager textManager;
     private Timer tempMessageTimer;
@@ -126,10 +129,17 @@ public class SpotifyScreen extends Screen {
         }, 0, 1000);
 
         userPremium = userFuture.join().getProduct() == ProductType.PREMIUM;
+
+        userCountryCode = userFuture.join().getCountry();
     }
 
     public SpotifyScreen() {
         super(Component.translatable("gui.spoticraft.spotify_player"));
+        instance = this;
+    }
+
+    public static SpotifyScreen getInstance() {
+        return instance;
     }
 
     @Override
@@ -217,6 +227,7 @@ public class SpotifyScreen extends Screen {
                         }
                     } // Toggle playback on click
             );
+            this.addRenderableWidget(playStopButton);
         }
 
         // Update the texture if the music playing state has changed
@@ -252,6 +263,7 @@ public class SpotifyScreen extends Screen {
                         }
                     }
             );
+            this.addRenderableWidget(nextButton);
         }
 
         if (previousButton == null) {
@@ -281,6 +293,7 @@ public class SpotifyScreen extends Screen {
                         }
                     }
             );
+            this.addRenderableWidget(previousButton);
         }
 
         previousButton.setActive(!shuffleState);
@@ -313,6 +326,7 @@ public class SpotifyScreen extends Screen {
                         }
                     }
             );
+            this.addRenderableWidget(shuffleButton);
         }
 
         if (repeatButton == null) {
@@ -341,20 +355,14 @@ public class SpotifyScreen extends Screen {
                         }
                     }
             );
+            this.addRenderableWidget(repeatButton);
         }
 
         if (searchInput == null) {
             // components seems to be useless here
-            searchInput = new EditBox(this.font, this.width/2, 3, this.width/4,15, CommonComponents.EMPTY);
+            searchInput = new EditBox(this.font, this.width/2 - this.width/8, 3, this.width/4,15, CommonComponents.EMPTY);
             this.addRenderableWidget(searchInput);
         }
-
-        // Add everything to the screen
-        this.addRenderableWidget(playStopButton);
-        this.addRenderableWidget(previousButton);
-        this.addRenderableWidget(nextButton);
-        this.addRenderableWidget(shuffleButton);
-        this.addRenderableWidget(repeatButton);
 
         textManager.drawText(graphics);
 
@@ -370,14 +378,14 @@ public class SpotifyScreen extends Screen {
         ).bounds(this.width / 2 - 50, this.height / 2, 100, 20).build());
     }
 
-    private void syncDataWithDelay() throws InterruptedException {
+    public void syncDataWithDelay() throws InterruptedException {
         Thread.sleep(250);
         syncData();
     }
 
     // sync
-    private void syncData() {
-        System.out.println("Sync playback state");
+    public void syncData() {
+        SpotiCraft.LOGGER.info("Syncing data");
 
         try {
             CurrentlyPlayingContext context = spotifyApi.getInformationAboutUsersCurrentPlayback().build().execute();
@@ -410,13 +418,7 @@ public class SpotifyScreen extends Screen {
                     String trackId = context.getItem().getId();
                     AlbumSimplified track = spotifyApi.getTrack(trackId).build().execute().getAlbum();
 
-                    // since some song can have multiple artist we do this to add then
-                    StringBuilder artists = new StringBuilder();
-                    for (ArtistSimplified artist : track.getArtists()) {
-                        artists.append(artist.getName()).append(", ");
-                    }
-                    // cut the ", " on the last artist
-                    artistName = artists.substring(0, artists.length() - 2);
+                    artistName = formatArtists(track.getArtists());
 
                     String url = track.getImages()[0].getUrl();
                     System.out.println("Track URL: " + url);
@@ -428,6 +430,7 @@ public class SpotifyScreen extends Screen {
 
                     trackJSON.put("url", url);
                     trackJSON.put("artists", artistName);
+                    trackJSON.put("uri", track.getUri());
 
                     trackCache.put(trackId, trackJSON);
                 }
@@ -437,7 +440,8 @@ public class SpotifyScreen extends Screen {
                 }
 
                 //playlist
-                final Paging<PlaylistSimplified> playlistSimplifiedPaging = spotifyApi.getListOfCurrentUsersPlaylists().build().execute();
+                Paging<PlaylistSimplified> playlistSimplifiedPaging = spotifyApi.getListOfCurrentUsersPlaylists().build().execute();
+                Paging<SavedAlbum> savedAlbumPaging = spotifyApi.getCurrentUsersSavedAlbums().build().execute();
 
                 playlistItems.clear();
 
@@ -445,21 +449,40 @@ public class SpotifyScreen extends Screen {
                     playlistPanel.clear();
                 }
 
+                playlistItems.add(new Item(
+                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/liked_songs.png"),
+                        "Liked Songs",
+                        "",
+                        Item.itemType.LIKED_TRACK,
+                        "",
+                        this.font));
+
+                for (SavedAlbum savedAlbum : savedAlbumPaging.getItems()) {
+                    Album album = savedAlbum.getAlbum();
+                    ResourceLocation albumImage = getImage(album.getImages() == null ? null : album.getImages()[0].getUrl());
+
+                    playlistItems.add(new Item(
+                            albumImage,
+                            resizeText(album.getName(), 17),
+                            album.getId(),
+                            Item.itemType.ALBUM,
+                            album.getUri(),
+                            this.font));
+                }
+
                 for (PlaylistSimplified playlist : playlistSimplifiedPaging.getItems()) {
-                    ResourceLocation playlistImage;
-                    if (playlist.getImages() == null) {
-                        playlistImage = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/default_playlist_image.png");
-                    } else {
-                        playlistImage = ImageHandler.downloadImage(playlist.getImages()[0].getUrl());
-                    }
+                    ResourceLocation playlistImage = getImage(playlist.getImages() == null ? null : playlist.getImages()[0].getUrl());
 
                     playlistItems.add(new Item(
                             playlistImage,
                             resizeText(playlist.getName(), 17),
+                            playlist.getId(),
+                            Item.itemType.PLAYLIST,
                             playlist.getUri(),
-                            Item.itemType.TRACK,
                             this.font));
                 }
+
+                //System.out.println(Arrays.toString(spotifyApi.getCurrentUsersSavedAlbums().build().execute().getItems()));
 
                 //TODO find a better fix for the bug where the last item isn't rendered correctly in the scroll panel
                 playlistItems.add(new Item(
@@ -467,15 +490,19 @@ public class SpotifyScreen extends Screen {
                         "",
                         "",
                         Item.itemType.EMPTY,
+                        "",
                         this.font
                 ));
 
                 if (playlistPanel != null) {
                     playlistPanel.setInfo(playlistItems);
                 }
+
+            } else {
+                ShowTempMessage("gui.spoticraft.no_device");
             }
         } catch (Exception e) {
-            System.out.println("Failed to sync playback state : " + e.getMessage());
+            System.out.println("Failed to sync data : " + e.getMessage());
             // most of the time when the sync failed it's because of an expired token
             try {
                 TokenStorage.checkIfExpired();
@@ -556,25 +583,79 @@ public class SpotifyScreen extends Screen {
 
     private void search(String query) {
         System.out.println("Searching for " + query);
-        CompletableFuture<Paging<Track>> pagingFuture = spotifyApi.searchTracks(query).build().executeAsync();
+        CompletableFuture<Paging<Track>> pagingFutureTrack = spotifyApi.searchTracks(query).build().executeAsync();
+        CompletableFuture<Paging<AlbumSimplified>> pagingFutureAlbum = spotifyApi.searchAlbums(query).build().executeAsync();
+        CompletableFuture<Paging<PlaylistSimplified>> pagingFuturePlaylist = spotifyApi.searchPlaylists(query).build().executeAsync();
+        CompletableFuture<Paging<Artist>> pagingFutureArtists = spotifyApi.searchArtists(query).build().executeAsync();
 
-        final Paging<Track> tracks = pagingFuture.join();
+        final Paging<Track> tracks = pagingFutureTrack.join();
+        final Paging<AlbumSimplified> albums = pagingFutureAlbum.join();
+        final Paging<PlaylistSimplified> playlists = pagingFuturePlaylist.join();
+        final Paging<Artist> artists = pagingFutureArtists.join();
 
-        System.out.println(Arrays.toString(tracks.getItems()));
+        mainItems.clear();
 
-        for (Track track : tracks.getItems()) {
-            ResourceLocation trackImage;
-            if (track.getAlbum().getImages() == null) {
-                trackImage = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/default_playlist_image.png");
-            } else {
-                trackImage = ImageHandler.downloadImage(track.getAlbum().getImages()[0].getUrl());
+        for (int i = 0; i < Math.min(2, artists.getItems().length); i++) {
+            Artist artist = artists.getItems()[i];
+            if (artist == null) {
+                continue;
             }
+            ResourceLocation artistImage = getImage(artist.getImages() == null ? null : artist.getImages()[0].getUrl());
+
+            mainItems.add(new Item(
+                    artistImage,
+                    resizeText(artist.getName(), 40),
+                    artist.getId(),
+                    Item.itemType.ARTIST,
+                    artist.getUri(),
+                    this.font));
+        }
+
+        for (int i = 0; i < Math.min(5, tracks.getItems().length); i++) {
+            Track track = tracks.getItems()[i];
+            if (track == null) {
+                continue;
+            }
+            ResourceLocation trackImage = getImage(track.getAlbum().getImages() == null ? null : track.getAlbum().getImages()[0].getUrl());
 
             mainItems.add(new Item(
                     trackImage,
                     resizeText(track.getName(), 40),
                     track.getUri(),
                     Item.itemType.TRACK,
+                    "",
+                    this.font));
+        }
+
+        for (int i = 0; i < Math.min(5, albums.getItems().length); i++) {
+            AlbumSimplified album = albums.getItems()[i];
+            if (album == null) {
+                continue;
+            }
+            ResourceLocation albumImage = getImage(album.getImages() == null ? null : album.getImages()[0].getUrl());
+
+            mainItems.add(new Item(
+                    albumImage,
+                    resizeText(album.getName(), 40),
+                    album.getId(),
+                    Item.itemType.ALBUM,
+                    album.getUri(),
+                    this.font));
+        }
+
+        for (int i = 0; i < Math.min(5, playlists.getItems().length); i++) {
+            PlaylistSimplified playlist = playlists.getItems()[i];
+            if (playlist == null) {
+                continue;
+            }
+            ResourceLocation playlistImage = getImage(playlist.getImages() == null ? null : playlist.getImages()[0].getUrl());
+
+            mainItems.add(new Item(
+                    playlistImage,
+                    resizeText(playlist.getName(), 17),
+                    playlist.getId(),
+                    Item.itemType.PLAYLIST,
+                    playlist.getUri(),
                     this.font));
         }
 
@@ -583,6 +664,7 @@ public class SpotifyScreen extends Screen {
                 "",
                 "",
                 Item.itemType.EMPTY,
+                "",
                 this.font
         ));
 
@@ -683,6 +765,108 @@ public class SpotifyScreen extends Screen {
         }
     }
 
+    public void showPlaylist(String playlistId, String playlistContext) throws IOException, ParseException, SpotifyWebApiException {
+        PlaylistTrack[] tracks = spotifyApi.getPlaylistsItems(playlistId).build().execute().getItems();
+
+        mainItems.clear();
+
+        for (PlaylistTrack track : tracks) {
+            showTrack(track.getTrack().getId(), track.getTrack().getUri(), track.getTrack().getName(), playlistContext);
+        }
+
+        mainItems.add(new Item(
+                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
+                "",
+                "",
+                Item.itemType.EMPTY,
+                "",
+                this.font
+        ));
+
+        mainPanel.setInfo(mainItems);
+    }
+
+    public void showAlbum(String albumId, String albumContext) throws IOException, ParseException, SpotifyWebApiException {
+        Paging<TrackSimplified> tracks = spotifyApi.getAlbumsTracks(albumId).build().execute();
+
+        System.out.println(Arrays.toString(tracks.getItems()));
+
+        mainPanel.clear();
+
+        for (TrackSimplified track : tracks.getItems()) {
+            showTrack(track.getId(), track.getUri(), track.getName(), albumContext);
+        }
+
+        mainItems.add(new Item(
+                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
+                "",
+                "",
+                Item.itemType.EMPTY,
+                "",
+                this.font
+        ));
+        mainPanel.setInfo(mainItems);
+    }
+
+    private void showTrack(String trackId, String trackUri, String trackName, String context) throws IOException, ParseException, SpotifyWebApiException {
+        String url;
+        if (trackCache.get(trackId) != null) {
+            JSONObject trackJson = trackCache.get(trackId);
+            //url
+            url = trackJson.getString("url");
+        } else {
+            AlbumSimplified trackAlbum = spotifyApi.getTrack(trackId).build().execute().getAlbum();
+
+            url = trackAlbum.getImages() == null ? null : trackAlbum.getImages()[0].getUrl();
+
+            // save url and artist into trackCache
+            JSONObject trackJSON = new JSONObject();
+
+            trackJSON.put("url", url);
+            trackJSON.put("artists", formatArtists(trackAlbum.getArtists()));
+            trackJSON.put("uri", trackUri);
+
+            trackCache.put(trackId, trackJSON);
+        }
+
+        ResourceLocation trackImage = getImage(url);
+
+        mainItems.add(new Item(
+                trackImage,
+                resizeText(trackName, 40),
+                trackUri,
+                Item.itemType.TRACK,
+                context,
+                this.font));
+    }
+
+    public void showLikedTracks() throws IOException, ParseException, SpotifyWebApiException {
+        Paging<SavedTrack> tracks = spotifyApi.getUsersSavedTracks().build().execute();
+
+        mainPanel.clear();
+
+        for (SavedTrack savedTrack : tracks.getItems()) {
+            Track track = savedTrack.getTrack();
+            showTrack(track.getId(), track.getUri(), track.getName(), "");
+        }
+
+        mainItems.add(new Item(
+                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
+                "",
+                "",
+                Item.itemType.EMPTY,
+                "",
+                this.font
+        ));
+        mainPanel.setInfo(mainItems);
+    }
+
+    public void showArtist(String artistId) throws IOException, ParseException, SpotifyWebApiException {
+        Track[] tracks = spotifyApi.getArtistsTopTracks(artistId, userCountryCode).build().execute();
+
+        System.out.println(Arrays.toString(tracks));
+    }
+
     // other
     private String formatTime(int seconds) {
         int minutes = seconds / 60;
@@ -722,6 +906,27 @@ public class SpotifyScreen extends Screen {
         }
 
         return resizedText.toString();
+    }
+
+    private String formatArtists(ArtistSimplified[] artists) {
+        // since some song can have multiple artist we do this to add then
+        StringBuilder artistsFormated = new StringBuilder();
+        for (ArtistSimplified artist : artists) {
+            artistsFormated.append(artist.getName()).append(", ");
+        }
+        // cut the ", " on the last artist
+        return artistsFormated.substring(0, artistsFormated.length() - 2);
+    }
+
+    private ResourceLocation getImage(String url) {
+        ResourceLocation image;
+        if (url == null) {
+            image = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/default_playlist_image.png");
+        } else {
+            image = ImageHandler.downloadImage(url);
+        }
+
+        return image;
     }
 
     @Override

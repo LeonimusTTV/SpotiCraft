@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Function;
 
+import static com.leonimust.spoticraft.SpotiCraft.LOGGER;
+
 public class ImageHandler {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final HashMap<String, ResourceLocation> CACHE = new HashMap<>();
@@ -52,6 +54,7 @@ public class ImageHandler {
 
     public static ResourceLocation downloadImage(String url) {
         try {
+            LOGGER.info("Downloading image from {}", url);
             // Check cache first
             if (CACHE.containsKey(url)) {
                 return CACHE.get(url);
@@ -63,7 +66,6 @@ public class ImageHandler {
 
             // Check if the image is already downloaded
             if (cachedFile.exists()) {
-                System.out.println(cachedFile.getAbsolutePath());
                 return loadFromDisk(cachedFile, url);
             }
 
@@ -76,16 +78,19 @@ public class ImageHandler {
             // Save the image to disk
             ImageIO.write(bufferedImage, "png", cachedFile);
 
+            LOGGER.info("Writing image to cache : {}", cachedFile.getAbsolutePath());
+
             // Load the image and cache it
             return loadFromDisk(cachedFile, url);
 
         } catch (Exception e) {
-            System.out.println("Failed to load image from " + url + ": " + e.getMessage());
+            LOGGER.error("Failed to load image from {}: {}", url, e.getMessage());
             return null; // Return null if something goes wrong
         }
     }
 
     private static ResourceLocation loadFromDisk(File file, String url) throws Exception {
+        LOGGER.info("Loading cached image : {}", file.getAbsolutePath());
         BufferedImage bufferedImage = ImageIO.read(file);
 
         // Convert BufferedImage to NativeImage

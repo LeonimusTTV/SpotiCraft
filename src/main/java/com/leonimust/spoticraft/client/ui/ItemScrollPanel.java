@@ -69,7 +69,7 @@ public class ItemScrollPanel extends ScrollPanel {
                     if (item.isMouseOver((int) mouseX, (int) mouseY, left, relativeY)) {
                         try {
                             item.onClick(); // Trigger the item's click action
-                        } catch (IOException | ParseException | SpotifyWebApiException e) {
+                        } catch (IOException | ParseException | SpotifyWebApiException | InterruptedException e) {
                             throw new RuntimeException(e);
                         }
                         return true;
