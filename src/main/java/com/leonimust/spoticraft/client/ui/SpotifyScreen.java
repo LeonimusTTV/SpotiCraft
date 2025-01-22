@@ -26,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.leonimust.spoticraft.client.TokenStorage.token;
 
-//TODO add the check before all spotifyApi call
 public class SpotifyScreen extends Screen {
     private static SpotifyScreen instance;
 
@@ -42,6 +41,7 @@ public class SpotifyScreen extends Screen {
     private ImageButton repeatButton;
     private ImageButton nextButton;
     private ImageButton previousButton;
+    private ImageButton goBackButton;
 
     public static SpotifyApi spotifyApi;
     private Timer updateTimer;
@@ -77,7 +77,9 @@ public class SpotifyScreen extends Screen {
     private EditBox searchInput;
 
     private final List<Item> playlistItems = new ArrayList<>();
-    private final List<Item> mainItems = new ArrayList<>();
+    private List<Item> mainItems = new ArrayList<>();
+
+    private final List<List<Item>> itemCache = new ArrayList<>();
 
     @Override
     public void init() {
@@ -365,6 +367,21 @@ public class SpotifyScreen extends Screen {
             this.addRenderableWidget(searchInput);
         }
 
+        if (goBackButton == null) {
+            goBackButton = new ImageButton(
+                    this.width/2 - this.width/6,
+                    4,
+                    13, // Button width
+                    13, // Button height
+                    ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/go_back.png"),  // Use stop texture if playing, otherwise play texture
+                    13, // Full texture width
+                    13, // Full texture height
+                    "gui.spoticraft.go_back",
+                    button -> goBack()
+            );
+            this.addRenderableWidget(goBackButton);
+        }
+
         textManager.drawText(graphics);
 
         this.drawMusicControlBar(graphics);
@@ -389,6 +406,12 @@ public class SpotifyScreen extends Screen {
         SpotiCraft.LOGGER.info("Syncing data");
 
         try {
+            try {
+                TokenStorage.checkIfExpired();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
             CurrentlyPlayingContext context = spotifyApi.getInformationAboutUsersCurrentPlayback().build().execute();
 
             if (context != null && context.getItem() != null) {
@@ -579,6 +602,11 @@ public class SpotifyScreen extends Screen {
     }
 
     private void search(String query) {
+        try {
+            TokenStorage.checkIfExpired();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("Searching for " + query);
         CompletableFuture<Paging<Track>> pagingFutureTrack = spotifyApi.searchTracks(query).build().executeAsync();
         CompletableFuture<Paging<AlbumSimplified>> pagingFutureAlbum = spotifyApi.searchAlbums(query).build().executeAsync();
@@ -589,6 +617,8 @@ public class SpotifyScreen extends Screen {
         final Paging<AlbumSimplified> albums = pagingFutureAlbum.join();
         final Paging<PlaylistSimplified> playlists = pagingFuturePlaylist.join();
         final Paging<Artist> artists = pagingFutureArtists.join();
+
+        saveLastAction();
 
         mainItems.clear();
 
@@ -756,6 +786,11 @@ public class SpotifyScreen extends Screen {
 
         // Send the volume update to Spotify API
         try {
+            try {
+                TokenStorage.checkIfExpired();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             spotifyApi.setVolumeForUsersPlayback(currentVolume).build().executeAsync();
         } catch (Exception e) {
             ShowTempMessage("Failed to set volume: " + e.getMessage());
@@ -763,7 +798,15 @@ public class SpotifyScreen extends Screen {
     }
 
     public void showPlaylist(String playlistId, String playlistContext) throws IOException, ParseException, SpotifyWebApiException {
+        try {
+            TokenStorage.checkIfExpired();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         PlaylistTrack[] tracks = spotifyApi.getPlaylistsItems(playlistId).build().execute().getItems();
+
+        saveLastAction();
 
         mainItems.clear();
 
@@ -784,9 +827,17 @@ public class SpotifyScreen extends Screen {
     }
 
     public void showAlbum(String albumId, String albumContext) throws IOException, ParseException, SpotifyWebApiException {
+        try {
+            TokenStorage.checkIfExpired();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         Paging<TrackSimplified> tracks = spotifyApi.getAlbumsTracks(albumId).build().execute();
 
         System.out.println(Arrays.toString(tracks.getItems()));
+
+        saveLastAction();
 
         mainItems.clear();
 
@@ -815,6 +866,12 @@ public class SpotifyScreen extends Screen {
     }
 
     private void showTrack(String trackId, String trackUri, String trackName, String context) throws IOException, ParseException, SpotifyWebApiException {
+        try {
+            TokenStorage.checkIfExpired();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         String url;
         if (trackCache.get(trackId) != null) {
             JSONObject trackJson = trackCache.get(trackId);
@@ -847,7 +904,15 @@ public class SpotifyScreen extends Screen {
     }
 
     public void showLikedTracks() throws IOException, ParseException, SpotifyWebApiException {
+        try {
+            TokenStorage.checkIfExpired();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         Paging<SavedTrack> tracks = spotifyApi.getUsersSavedTracks().build().execute();
+
+        saveLastAction();
 
         mainItems.clear();
 
@@ -868,8 +933,16 @@ public class SpotifyScreen extends Screen {
     }
 
     public void showArtist(String artistId) throws IOException, ParseException, SpotifyWebApiException {
+        try {
+            TokenStorage.checkIfExpired();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         Track[] tracks = spotifyApi.getArtistsTopTracks(artistId, userCountryCode).build().execute();
         Paging<AlbumSimplified> albums = spotifyApi.getArtistsAlbums(artistId).build().execute();
+
+        saveLastAction();
 
         mainItems.clear();
 
@@ -900,6 +973,21 @@ public class SpotifyScreen extends Screen {
                 this.font
         ));
         mainPanel.setInfo(mainItems);
+    }
+
+    public void goBack() {
+        if (itemCache.isEmpty() || itemCache.size() == 1)
+            return;
+
+        mainItems.clear();
+        mainItems = new ArrayList<>(itemCache.getLast());
+        mainPanel.setInfo(mainItems);
+        itemCache.removeLast();
+    }
+
+    private void saveLastAction() {
+        itemCache.addLast(new ArrayList<>(mainItems));
+        System.out.println("save : "+itemCache);
     }
 
     // other

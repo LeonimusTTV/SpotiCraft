@@ -37,15 +37,8 @@ public class TokenStorage {
         tokenJson.put("access_token", accessToken);
         tokenJson.put("refresh_token", refreshToken);
         tokenJson.put("expires_in", expiresIn);
-        tokenJson.put("timestamp", System.currentTimeMillis() + expiresIn * 1000L);
-
-        // time
-        /*Timestamp stamp = new Timestamp(System.currentTimeMillis());
-        Date date = new Date(stamp.getTime());
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-        String formattedDate = sdf.format(date);
-        System.out.println(formattedDate);*/
+        // removed 250 out of 3600 from expire so we avoid having an expired token
+        tokenJson.put("timestamp", System.currentTimeMillis() + (expiresIn - 250) * 1000L);
 
         try (FileWriter writer = new FileWriter(tokenFile)) {
             writer.write(tokenJson.toString());
