@@ -17,7 +17,7 @@ SpotiCraft allow you to connect into your Spotify account and play your favorite
 ## TODO List
 - Login - Finished
 - Play music (play, pause, next, previous, shuffle, repeat, volume) - Finished
-- Playlist (edit, play, etc) - Finished
+- Playlist (edit, play, etc) - WIP
 - Search for music, artist or playlist - Finished
 - Artist page (show music of artist, playable music) - Finished
 - Album, play music - Finished
@@ -28,7 +28,7 @@ SpotiCraft allow you to connect into your Spotify account and play your favorite
 Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.19, version before 1.19 will not be surpported, at least for now.
 | Minecraft version | Mod version | Mod Loader | Link |
 |---|---|---|---|
-| 1.21.4 | 0.0.2-alpha (current) | Forge | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
+| 1.21.4 | 0.0.1-beta (current) | Forge | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
 | 1.21.3 to 1.19 | - | Forge + NeoForge (1.20.2) | - |
 | before 1.19 | Not planned to be supported | - |  - |
 
@@ -41,9 +41,20 @@ Use JAVA 21 as your JDK\
 Build and enjoy :3
 
 ## Changelog
+Beta 0.0.1
+- Made ui smaller
+- Added Search with artist, songs, playlist and albums
+- Added Artist page with top songs and albums
+- Added Playlist page with playable music
+- Added Albums, same as playlist
+- Added music name and artist(s)
+- Added Liked songs, same as playlist and albums
+- Added back button
+- Added a play button in albums (will be reworked on future version)
+
 Alpha 0.0.2
 - Fixed crashes
-- Bumb forge version to 1.21.4-54.0.16
+- Bump forge version to 1.21.4-54.0.16
 
 Alpha 0.0.1 - Removed due to issues
 - User can login with their Spotify account
