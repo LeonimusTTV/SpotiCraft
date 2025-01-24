@@ -42,6 +42,8 @@ public class SpotifyScreen extends Screen {
     private ImageButton nextButton;
     private ImageButton previousButton;
     private ImageButton goBackButton;
+    private ImageButton goForwardButton;
+    private ImageButton homeButton;
 
     public static SpotifyApi spotifyApi;
     private Timer updateTimer;
@@ -57,6 +59,7 @@ public class SpotifyScreen extends Screen {
 
     ResourceLocation PLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/play.png");
     ResourceLocation PAUSE_TEXTURE = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/pause.png");
+    ResourceLocation EMPTY_IMAGE = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png");
 
     private final String[] trackList = {"off", "context", "track"};
     private int trackIndex = 0;
@@ -79,7 +82,9 @@ public class SpotifyScreen extends Screen {
     private final List<Item> playlistItems = new ArrayList<>();
     private List<Item> mainItems = new ArrayList<>();
 
+    // save all actions so user can go back
     private final List<List<Item>> itemCache = new ArrayList<>();
+    private final List<List<Item>> itemCacheForward = new ArrayList<>();
 
     @Override
     public void init() {
@@ -166,7 +171,11 @@ public class SpotifyScreen extends Screen {
             if (!userPremium) {
                 noPremium();
             } else {
-                mainScreen();
+                try {
+                    mainScreen();
+                } catch (IOException | ParseException | SpotifyWebApiException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
@@ -179,7 +188,7 @@ public class SpotifyScreen extends Screen {
         ).bounds(this.width / 2 - 50, this.height / 2, 100, 20).build());
     }
 
-    private void mainScreen() {
+    private void mainScreen() throws IOException, ParseException, SpotifyWebApiException {
 
         if (playlistPanel == null) {
             playlistPanel = new ItemScrollPanel(this.minecraft, this.width / 3,this.height - 64, 20, 5);
@@ -369,7 +378,7 @@ public class SpotifyScreen extends Screen {
 
         if (goBackButton == null) {
             goBackButton = new ImageButton(
-                    this.width/2 - this.width/6,
+                    this.width/2 - this.width/6 + 6,
                     4,
                     13, // Button width
                     13, // Button height
@@ -380,6 +389,52 @@ public class SpotifyScreen extends Screen {
                     button -> goBack()
             );
             this.addRenderableWidget(goBackButton);
+        }
+
+        if (goForwardButton == null) {
+            goForwardButton = new ImageButton(
+                    this.width/2 + this.width/6 - 19,
+                    4,
+                    13, // Button width
+                    13, // Button height
+                    ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/go_forward.png"),  // Use stop texture if playing, otherwise play texture
+                    13, // Full texture width
+                    13, // Full texture height
+                    "gui.spoticraft.go_forward",
+                    button -> goForward()
+            );
+            this.addRenderableWidget(goForwardButton);
+        }
+
+        if (homeButton == null) {
+            homeButton = new ImageButton(
+                    5,
+                    3,
+                    15, // Button width
+                    15, // Button height
+                    ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/home.png"),  // Use stop texture if playing, otherwise play texture
+                    15, // Full texture width
+                    15, // Full texture height
+                    "gui.spoticraft.home",
+                    button -> {
+                        try {
+                            showHomePage();
+                        } catch (IOException | ParseException | SpotifyWebApiException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+            );
+            this.addRenderableWidget(homeButton);
+        }
+
+        if (mainItems.isEmpty()) {
+            this.showHomePage();
+            //once it's finished save the main page
+            saveLastAction();
+        }
+
+        if (playlistItems.isEmpty()) {
+            showUserPlaylists();
         }
 
         textManager.drawText(graphics);
@@ -462,62 +517,6 @@ public class SpotifyScreen extends Screen {
                 if (repeatButton != null) {
                     repeatButton.setTooltip(trackIndex == 0 ? "gui.spoticraft.enable_repeat" : trackIndex == 1 ? "gui.spoticraft.enable_repeat_one" : "gui.spoticraft.disable_repeat");
                 }
-
-                //playlist
-                Paging<PlaylistSimplified> playlistSimplifiedPaging = spotifyApi.getListOfCurrentUsersPlaylists().build().execute();
-                Paging<SavedAlbum> savedAlbumPaging = spotifyApi.getCurrentUsersSavedAlbums().build().execute();
-
-                playlistItems.clear();
-
-                playlistItems.add(new Item(
-                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/liked_songs.png"),
-                        "Liked Songs",
-                        "",
-                        Item.itemType.LIKED_TRACK,
-                        "",
-                        this.font));
-
-                for (SavedAlbum savedAlbum : savedAlbumPaging.getItems()) {
-                    Album album = savedAlbum.getAlbum();
-                    ResourceLocation albumImage = getImage(album.getImages() == null ? null : album.getImages()[0].getUrl());
-
-                    playlistItems.add(new Item(
-                            albumImage,
-                            resizeText(album.getName(), 17),
-                            album.getId(),
-                            Item.itemType.ALBUM,
-                            album.getUri(),
-                            this.font));
-                }
-
-                for (PlaylistSimplified playlist : playlistSimplifiedPaging.getItems()) {
-                    ResourceLocation playlistImage = getImage(playlist.getImages() == null ? null : playlist.getImages()[0].getUrl());
-
-                    playlistItems.add(new Item(
-                            playlistImage,
-                            resizeText(playlist.getName(), 17),
-                            playlist.getId(),
-                            Item.itemType.PLAYLIST,
-                            playlist.getUri(),
-                            this.font));
-                }
-
-                //System.out.println(Arrays.toString(spotifyApi.getCurrentUsersSavedAlbums().build().execute().getItems()));
-
-                //TODO find a better fix for the bug where the last item isn't rendered correctly in the scroll panel
-                playlistItems.add(new Item(
-                        ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
-                        "",
-                        "",
-                        Item.itemType.EMPTY,
-                        "",
-                        this.font
-                ));
-
-                if (playlistPanel != null) {
-                    playlistPanel.setInfo(playlistItems);
-                }
-
             } else {
                 ShowTempMessage("gui.spoticraft.no_device");
             }
@@ -687,7 +686,7 @@ public class SpotifyScreen extends Screen {
         }
 
         mainItems.add(new Item(
-                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
+                EMPTY_IMAGE,
                 "",
                 "",
                 Item.itemType.EMPTY,
@@ -810,12 +809,21 @@ public class SpotifyScreen extends Screen {
 
         mainItems.clear();
 
+        mainItems.add(new Item(
+                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/play.png"),
+                "Play Playlist",
+                "",
+                Item.itemType.PLAY_ALBUM_PLAYLIST,
+                playlistContext,
+                this.font
+        ));
+
         for (PlaylistTrack track : tracks) {
             showTrack(track.getTrack().getId(), track.getTrack().getUri(), track.getTrack().getName(), playlistContext);
         }
 
         mainItems.add(new Item(
-                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
+                EMPTY_IMAGE,
                 "",
                 "",
                 Item.itemType.EMPTY,
@@ -845,7 +853,7 @@ public class SpotifyScreen extends Screen {
                 ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/play.png"),
                 "Play Album",
                 "",
-                Item.itemType.PLAY_ALBUM,
+                Item.itemType.PLAY_ALBUM_PLAYLIST,
                 albumContext,
                 this.font
         ));
@@ -855,7 +863,7 @@ public class SpotifyScreen extends Screen {
         }
 
         mainItems.add(new Item(
-                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
+                EMPTY_IMAGE,
                 "",
                 "",
                 Item.itemType.EMPTY,
@@ -922,7 +930,7 @@ public class SpotifyScreen extends Screen {
         }
 
         mainItems.add(new Item(
-                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
+                EMPTY_IMAGE,
                 "",
                 "",
                 Item.itemType.EMPTY,
@@ -965,7 +973,7 @@ public class SpotifyScreen extends Screen {
         }
 
         mainItems.add(new Item(
-                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png"),
+                EMPTY_IMAGE,
                 "",
                 "",
                 Item.itemType.EMPTY,
@@ -975,14 +983,127 @@ public class SpotifyScreen extends Screen {
         mainPanel.setInfo(mainItems);
     }
 
+    private void showHomePage() throws IOException, ParseException, SpotifyWebApiException {
+        Paging<AlbumSimplified> newRelease = spotifyApi.getListOfNewReleases().build().execute();
+
+        // if main items is empty it means that the ui just init
+        if (!mainItems.isEmpty()) {
+            saveLastAction();
+        }
+
+        mainItems.clear();
+
+        mainItems.add(new Item(
+                EMPTY_IMAGE,
+                "New Releases",
+                "",
+                Item.itemType.CATEGORY,
+                "",
+                this.font
+        ));
+        
+        for (int i = 0; i < Math.min(5, newRelease.getItems().length); i++) {
+            AlbumSimplified album = newRelease.getItems()[i];
+            ResourceLocation albumImage = getImage(album.getImages() == null ? null : album.getImages()[0].getUrl());
+
+            mainItems.add(new Item(
+                    albumImage,
+                    album.getName(),
+                    album.getId(),
+                    Item.itemType.ALBUM,
+                    album.getUri(),
+                    this.font
+            ));
+        }
+
+        mainItems.add(new Item(
+                EMPTY_IMAGE,
+                "",
+                "",
+                Item.itemType.EMPTY,
+                "",
+                this.font
+        ));
+
+        mainPanel.setInfo(mainItems);
+    }
+
+    private void showUserPlaylists() throws IOException, ParseException, SpotifyWebApiException {
+        Paging<PlaylistSimplified> playlistSimplifiedPaging = spotifyApi.getListOfCurrentUsersPlaylists().build().execute();
+        Paging<SavedAlbum> savedAlbumPaging = spotifyApi.getCurrentUsersSavedAlbums().build().execute();
+
+        playlistItems.clear();
+
+        playlistItems.add(new Item(
+                ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/liked_songs.png"),
+                "Liked Songs",
+                "",
+                Item.itemType.LIKED_TRACK,
+                "",
+                this.font));
+
+        for (SavedAlbum savedAlbum : savedAlbumPaging.getItems()) {
+            Album album = savedAlbum.getAlbum();
+            ResourceLocation albumImage = getImage(album.getImages() == null ? null : album.getImages()[0].getUrl());
+
+            playlistItems.add(new Item(
+                    albumImage,
+                    resizeText(album.getName(), 17),
+                    album.getId(),
+                    Item.itemType.ALBUM,
+                    album.getUri(),
+                    this.font));
+        }
+
+        for (PlaylistSimplified playlist : playlistSimplifiedPaging.getItems()) {
+            ResourceLocation playlistImage = getImage(playlist.getImages() == null ? null : playlist.getImages()[0].getUrl());
+
+            playlistItems.add(new Item(
+                    playlistImage,
+                    resizeText(playlist.getName(), 17),
+                    playlist.getId(),
+                    Item.itemType.PLAYLIST,
+                    playlist.getUri(),
+                    this.font));
+        }
+
+        //System.out.println(Arrays.toString(spotifyApi.getCurrentUsersSavedAlbums().build().execute().getItems()));
+
+        //TODO find a better fix for the bug where the last item isn't rendered correctly in the scroll panel
+        playlistItems.add(new Item(
+                EMPTY_IMAGE,
+                "",
+                "",
+                Item.itemType.EMPTY,
+                "",
+                this.font
+        ));
+
+        if (playlistPanel != null) {
+            playlistPanel.setInfo(playlistItems);
+        }
+    }
+
     public void goBack() {
         if (itemCache.isEmpty() || itemCache.size() == 1)
             return;
 
+        itemCacheForward.addLast(new ArrayList<>(mainItems));
         mainItems.clear();
         mainItems = new ArrayList<>(itemCache.getLast());
         mainPanel.setInfo(mainItems);
         itemCache.removeLast();
+    }
+
+    public void goForward() {
+        if (itemCacheForward.isEmpty())
+            return;
+
+        itemCache.addLast(new ArrayList<>(mainItems));
+        mainItems.clear();
+        mainItems = new ArrayList<>(itemCacheForward.getLast());
+        mainPanel.setInfo(mainItems);
+        itemCacheForward.removeLast();
     }
 
     private void saveLastAction() {

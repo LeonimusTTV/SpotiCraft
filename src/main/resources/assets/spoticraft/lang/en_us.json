@@ -16,5 +16,7 @@
   "gui.spoticraft.no_premium": "It seems that you don't have Spotify Premium on this account, you need Spotify Premium to use this mod.",
   "gui.spoticraft.no_premium_2": "Click the button bellow if you want to change account.",
   "gui.spoticraft.sync_error": "Failed to sync data !",
-  "gui.spoticraft.go_back": "Go Back"
+  "gui.spoticraft.go_back": "Go Back",
+  "gui.spoticraft.go_forward": "Go Forward",
+  "gui.spoticraft.home": "Home"
 }

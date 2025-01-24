@@ -25,10 +25,11 @@ public class Item {
     public enum itemType {
         PLAYLIST,
         ALBUM,
-        PLAY_ALBUM,
+        PLAY_ALBUM_PLAYLIST,
         TRACK,
         LIKED_TRACK,
         ARTIST,
+        CATEGORY,
         EMPTY
     }
 
@@ -59,9 +60,9 @@ public class Item {
                 imageWidth,
                 imageHeight);
 
-        graphics.drawString(font, name, x + imageWidth + 5, y + 8, 16777215);
+        graphics.drawString(font, name, x + imageWidth + 5, type == itemType.CATEGORY || type == itemType.PLAY_ALBUM_PLAYLIST || type == itemType.LIKED_TRACK ? y + 12 : y + 8, 16777215);
 
-        if (type == itemType.EMPTY) {
+        if (type == itemType.EMPTY || type == itemType.CATEGORY || type == itemType.PLAY_ALBUM_PLAYLIST || type == itemType.LIKED_TRACK) {
             return;
         }
 
@@ -109,7 +110,7 @@ public class Item {
             SpotifyScreen.getInstance().showPlaylist(this.itemUri, this.contextUri);
         }
 
-        if (type == itemType.PLAY_ALBUM) {
+        if (type == itemType.PLAY_ALBUM_PLAYLIST) {
             SpotifyScreen.spotifyApi.startResumeUsersPlayback().context_uri(this.contextUri).build().execute();
             Thread.sleep(250);
             //update the ui and wait to make sure the api give update to date info
