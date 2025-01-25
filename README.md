@@ -51,6 +51,7 @@ Beta 0.0.2
 - Added go forward button
 - Added play button in playlist
 - Removed the text of Play button in albums and playlist, same for Liked Songs
+- Fixed scroll not being reset when content change
 - Made some general improvement
 
 Beta 0.0.1 - Removed due to crash when searching
