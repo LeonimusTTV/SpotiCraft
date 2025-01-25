@@ -102,6 +102,10 @@ public class ImageHandler {
         LOGGER.info("Loading cached image : {}", file.getAbsolutePath());
         BufferedImage bufferedImage = ImageIO.read(file);
 
+        if (bufferedImage == null) {
+            return SpotifyScreen.EMPTY_IMAGE;
+        }
+
         // Convert BufferedImage to NativeImage
         NativeImage nativeImage = convertToNativeImage(bufferedImage);
 

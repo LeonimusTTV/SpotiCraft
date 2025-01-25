@@ -59,7 +59,7 @@ public class SpotifyScreen extends Screen {
 
     ResourceLocation PLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/play.png");
     ResourceLocation PAUSE_TEXTURE = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/pause.png");
-    ResourceLocation EMPTY_IMAGE = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png");
+    public static ResourceLocation EMPTY_IMAGE = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/empty.png");
 
     private final String[] trackList = {"off", "context", "track"};
     private int trackIndex = 0;
