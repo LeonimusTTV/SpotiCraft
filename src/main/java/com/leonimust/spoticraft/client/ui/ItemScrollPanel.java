@@ -24,6 +24,7 @@ public class ItemScrollPanel extends ScrollPanel {
 
     public void setInfo(List<Item> content) {
         this.items = content;
+        this.scrollDistance = 0;
     }
 
     @Override
