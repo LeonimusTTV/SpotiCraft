@@ -32,7 +32,7 @@ Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.
 | Minecraft version | Mod version | Mod Loader | Link |
 |---|---|---|---|
 | 1.21.4 | 0.0.3-beta | Forge | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
-| 1.21.4 | 0.0.1-beta | NeoForge | [NeoForge](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.4-neoforge) |
+| 1.21.4 | 0.0.3-beta | NeoForge | [NeoForge](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.4-neoforge) |
 | 1.21.3 to 1.19 | - | Forge + NeoForge (1.20.2) | - |
 | before 1.19 | Not planned to be supported | - |  - |
 
