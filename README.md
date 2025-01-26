@@ -45,6 +45,10 @@ Use JAVA 21 as your JDK\
 Build and enjoy :3
 
 ## Changelog
+Beta 0.0.3
+- Added NeoForge support for 1.21.4
+- Fixed crash when searching (doesn't occur all the time, but sometimes it does)
+
 Beta 0.0.2
 - Fixed crash when searching from the last version
 - Added home button
