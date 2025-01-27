@@ -6,6 +6,7 @@ Another also called SpotiCraft exist, it's not maintained anymore, but you can a
 ## Table of Content
 [Description](#description)\
 [TODO List](#todo-list)\
+[FAQ](#faq)\
 [Version List](#version-list)\
 [API](#api)\
 [How to build the mod](#how-to-build-the-mod)\
@@ -26,6 +27,14 @@ SpotiCraft allow you to connect into your Spotify account and play your favorite
 - Add and remove from playlist - TODO
 - UI in general -WIP
 - Improvement - WIP
+
+## FAQ
+
+### Minecraft keep crashing after updating the mod
+
+If that happen to you, before making an issue, try to delete the "spoticraft" folder in the Minecraft folder (where the mods folder is)\
+If Minecraft keep crashing, try to only have this mod in your mods' folder\
+If Minecraft still crash, make an issue and don't forget your log file
 
 ## Version List
 Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.19, version before 1.19 will not be supported, at least for now.

@@ -19,6 +19,7 @@ public class Item {
     private final ResourceLocation image;
     private final String name;
     private final Font font;
+    private final String itemId;
     private final String itemUri;
     private final itemType type;
     private final String contextUri;
@@ -33,11 +34,12 @@ public class Item {
         EMPTY
     }
 
-    public Item(ResourceLocation image, String name, String id, itemType type, String contextId, Font font) {
+    public Item(ResourceLocation image, String name, String uri, String id, itemType type, String contextId, Font font) {
         this.image = image;
         this.name = name;
         this.font = font;
-        this.itemUri = id;
+        this.itemUri = uri;
+        this.itemId = id;
         this.type = type;
         this.contextUri = contextId;
     }
@@ -85,13 +87,14 @@ public class Item {
         }
 
         System.out.println("Item clicked: " + name);
-        System.out.println("Item id: " + itemUri);
+        System.out.println("Item id: " + itemId);
+        System.out.println("Item uri: " + itemUri);
+        System.out.println("Context uri: " + contextUri);
         System.out.println("Item type: " + type);
 
         // play the music
         if (type == itemType.TRACK) {
             if (!Objects.equals(contextUri, "") && contextUri != null) {
-                System.out.println("Context uri: " + contextUri);
                 SpotifyScreen.spotifyApi.startResumeUsersPlayback().context_uri(contextUri).offset((JsonParser.parseString("{\"uri\":\"" + this.itemUri + "\"}")).getAsJsonObject()).build().execute();
             } else {
                 SpotifyScreen.spotifyApi.startResumeUsersPlayback().uris((JsonArray)JsonParser.parseString("[\"" + this.itemUri + "\"]")).build().execute();
@@ -103,11 +106,11 @@ public class Item {
         }
 
         if (type == itemType.ALBUM) {
-            SpotifyScreen.getInstance().showAlbum(this.itemUri, this.contextUri);
+            SpotifyScreen.getInstance().showAlbum(this.itemId, this.itemUri);
         }
 
         if (type == itemType.PLAYLIST) {
-            SpotifyScreen.getInstance().showPlaylist(this.itemUri, this.contextUri);
+            SpotifyScreen.getInstance().showPlaylist(this.itemId, this.itemUri);
         }
 
         if (type == itemType.PLAY_ALBUM_PLAYLIST) {
@@ -122,7 +125,7 @@ public class Item {
         }
 
         if (type == itemType.ARTIST) {
-            SpotifyScreen.getInstance().showArtist(this.itemUri);
+            SpotifyScreen.getInstance().showArtist(this.itemId);
         }
     }
 }

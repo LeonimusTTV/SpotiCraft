@@ -25,7 +25,7 @@ public class SpotifyAuthHandler {
     private static final String CLIENT_ID = "d108b6364fff46f2b17c03145e48040a";
     // client secret was here 👀 no need to search for it, it has been refreshed :3
     private static final String REDIRECT_URI = "http://localhost:8080/callback";
-    private static final String SCOPES = "user-read-playback-state user-modify-playback-state user-read-private playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-library-read";
+    private static final String SCOPES = "user-read-playback-state user-modify-playback-state user-read-private playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-library-read user-library-modify";
     private static final String ENCODED_SCOPES = URLEncoder.encode(SCOPES, StandardCharsets.UTF_8);
 
     private static final String BASE_URL = "https://spoticraft.leonimust.com";
