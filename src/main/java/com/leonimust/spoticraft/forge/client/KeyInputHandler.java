@@ -1,14 +1,14 @@
-package com.leonimust.spoticraft.client;
+package com.leonimust.spoticraft.forge.client;
 
-import com.leonimust.spoticraft.SpotiCraft;
-import com.leonimust.spoticraft.client.ui.SpotifyScreen;
+import com.leonimust.spoticraft.Main;
+import com.leonimust.spoticraft.forge.client.ui.SpotifyScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = SpotiCraft.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = Main.MOD_ID, value = Dist.CLIENT)
 public class KeyInputHandler {
     private static boolean wasPressed = false;
     static SpotifyScreen spotifyScreen = new SpotifyScreen();

@@ -1,7 +1,7 @@
-package com.leonimust.spoticraft.client;
+package com.leonimust.spoticraft.neoforge.client;
 
-import com.leonimust.spoticraft.client.ui.SpotifyScreen;
-import com.leonimust.spoticraft.server.SpotifyAuthHandler;
+import com.leonimust.spoticraft.neoforge.server.SpotifyAuthHandler;
+import com.leonimust.spoticraft.neoforge.client.ui.SpotifyScreen;
 import net.minecraft.client.Minecraft;
 import org.json.JSONObject;
 import se.michaelthelin.spotify.SpotifyApi;
@@ -11,7 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static com.leonimust.spoticraft.SpotiCraft.LOGGER;
+import static com.leonimust.spoticraft.Main.LOGGER;
 
 public class TokenStorage {
     private static final Minecraft MC = Minecraft.getInstance();

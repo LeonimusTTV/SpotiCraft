@@ -1,11 +1,12 @@
-package com.leonimust.spoticraft.server;
+package com.leonimust.spoticraft.common.server;
 
+import com.leonimust.spoticraft.forge.server.SpotifyAuthHandler;
 import fi.iki.elonen.NanoHTTPD;
 
 import java.io.IOException;
 import java.util.List;
 
-import static com.leonimust.spoticraft.SpotiCraft.LOGGER;
+import static com.leonimust.spoticraft.Main.LOGGER;
 
 public class CallbackServer extends NanoHTTPD {
 

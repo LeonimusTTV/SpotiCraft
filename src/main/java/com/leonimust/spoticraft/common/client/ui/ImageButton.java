@@ -1,4 +1,4 @@
-package com.leonimust.spoticraft.client.ui;
+package com.leonimust.spoticraft.common.client.ui;
 
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.GuiGraphics;

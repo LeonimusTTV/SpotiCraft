@@ -1,22 +1,22 @@
-package com.leonimust.spoticraft.server;
+package com.leonimust.spoticraft.neoforge.server;
+
+import com.leonimust.spoticraft.neoforge.client.TokenStorage;
+import com.leonimust.spoticraft.common.server.CallbackServer;
+import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
-
-import com.leonimust.spoticraft.client.TokenStorage;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import net.minecraft.client.Minecraft;
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
-
-import static com.leonimust.spoticraft.SpotiCraft.LOGGER;
+import static com.leonimust.spoticraft.Main.LOGGER;
 
 //TODO optimize this if I feel like I wanna do it :p
 public class SpotifyAuthHandler {

@@ -1,6 +1,7 @@
-package com.leonimust.spoticraft.client.ui;
+package com.leonimust.spoticraft.common.client.ui;
 
-import com.leonimust.spoticraft.SpotiCraft;
+import com.leonimust.spoticraft.Main;
+import com.leonimust.spoticraft.forge.client.ui.SpotifyScreen;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -22,7 +23,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static com.leonimust.spoticraft.SpotiCraft.LOGGER;
+import static com.leonimust.spoticraft.Main.LOGGER;
 
 public class ImageHandler {
     private static final Minecraft MC = Minecraft.getInstance();
@@ -113,7 +114,7 @@ public class ImageHandler {
         DynamicTexture dynamicTexture = new DynamicTexture(nativeImage);
 
         // Register the texture in Minecraft's TextureManager
-        ResourceLocation textureLocation = ResourceLocation.fromNamespaceAndPath(SpotiCraft.MOD_ID, "textures/gui/spotify_cover_" + UUID.randomUUID());
+        ResourceLocation textureLocation = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/spotify_cover_" + UUID.randomUUID());
         MC.getTextureManager().register(textureLocation, dynamicTexture);
 
         // Cache the texture

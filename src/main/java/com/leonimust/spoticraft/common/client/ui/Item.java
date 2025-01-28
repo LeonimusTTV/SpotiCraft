@@ -1,7 +1,8 @@
-package com.leonimust.spoticraft.client.ui;
+package com.leonimust.spoticraft.common.client.ui;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import com.leonimust.spoticraft.forge.client.ui.SpotifyScreen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

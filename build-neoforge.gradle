@@ -1,0 +1,145 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.gradle.userdev' version '7.0.178'
+}
+
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+version = mod_version + "-neoforge"
+group = mod_group_id
+
+repositories {
+    mavenLocal()
+}
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+runs {
+    configureEach {
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
+
+        modSource project.sourceSets.main
+
+        dependencies {
+            runtime 'org.nanohttpd:nanohttpd:2.3.1'
+            runtime 'org.json:json:20231013'
+            runtime 'se.michaelthelin.spotify:spotify-web-api-java:9.1.0'
+        }
+    }
+
+    client {
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+    }
+
+    server {
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        argument '--nogui'
+    }
+    gameTestServer {
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+    }
+
+    clientData {
+        arguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            exclude 'com/leonimust/spoticraft/forge/**'
+            exclude 'com/leonimust/spoticraft/forge/ui/**'
+        }
+
+        resources {
+            exclude 'META-INF/mods.toml'
+        }
+    }
+}
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    implementation "net.neoforged:neoforge:${neo_version}"
+
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    implementation 'org.json:json:20231013'
+    implementation 'se.michaelthelin.spotify:spotify-web-api-java:9.1.0'
+
+    // TODO change ranged since it's deprecated
+    jarJar('org.apache.httpcomponents.core5:httpcore5:5.3.1') {
+        jarJar.ranged(it, "[5.3,5.4)")
+    }
+
+    jarJar('org.json:json:20231013') {
+        jarJar.ranged(it, "[20231013,20231015)")
+    }
+
+    jarJar('org.nanohttpd:nanohttpd:2.3.1') {
+        jarJar.ranged(it, "[2.3,2.4)")
+    }
+
+    jarJar('se.michaelthelin.spotify:spotify-web-api-java:9.1.0') {
+        jarJar.ranged(it, '[9.1,9.2)')
+    }
+
+    // I need copium
+    jarJar('org.apache.httpcomponents.client5:httpclient5:5.4.1') {
+        jarJar.ranged(it, "[5.4,5.5)")
+    }
+
+    jarJar('org.apache.httpcomponents.client5:httpclient5-cache:5.4.1') {
+        jarJar.ranged(it, "[5.4,5.5)")
+    }
+
+    jarJar('org.apache.httpcomponents.core5:httpcore5-h2:5.3.1') {
+        jarJar.ranged(it, "[5.3,5.4)")
+    }
+
+    jarJar('com.neovisionaries:nv-i18n:1.28') {
+        jarJar.ranged(it, "[1.28,1.29)")
+    }
+}
+
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : neo_loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
+    }
+}
+
+jarJar.enable()
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
