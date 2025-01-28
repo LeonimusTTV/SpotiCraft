@@ -1,6 +1,6 @@
 package com.leonimust.spoticraft.neoforge.client.ui;
 
-import com.leonimust.spoticraft.common.client.ui.Item;
+import com.leonimust.spoticraft.neoforge.client.ui.Item;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

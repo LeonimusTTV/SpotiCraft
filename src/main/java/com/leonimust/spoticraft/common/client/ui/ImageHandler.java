@@ -1,7 +1,6 @@
 package com.leonimust.spoticraft.common.client.ui;
 
 import com.leonimust.spoticraft.Main;
-import com.leonimust.spoticraft.forge.client.ui.SpotifyScreen;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -104,7 +103,7 @@ public class ImageHandler {
         BufferedImage bufferedImage = ImageIO.read(file);
 
         if (bufferedImage == null) {
-            return SpotifyScreen.EMPTY_IMAGE;
+            return ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/empty.png");
         }
 
         // Convert BufferedImage to NativeImage

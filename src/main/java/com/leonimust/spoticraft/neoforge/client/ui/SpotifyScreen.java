@@ -4,7 +4,7 @@ import com.leonimust.spoticraft.Main;
 import com.leonimust.spoticraft.neoforge.client.TokenStorage;
 import com.leonimust.spoticraft.common.client.ui.ImageButton;
 import com.leonimust.spoticraft.common.client.ui.ImageHandler;
-import com.leonimust.spoticraft.common.client.ui.Item;
+import com.leonimust.spoticraft.neoforge.client.ui.Item;
 import com.leonimust.spoticraft.common.client.ui.TextManager;
 import com.leonimust.spoticraft.neoforge.server.SpotifyAuthHandler;
 import com.neovisionaries.i18n.CountryCode;
@@ -65,7 +65,7 @@ public class SpotifyScreen extends Screen {
 
     ResourceLocation PLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/play.png");
     ResourceLocation PAUSE_TEXTURE = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/pause.png");
-    public static ResourceLocation EMPTY_IMAGE = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/empty.png");
+    ResourceLocation EMPTY_IMAGE = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/empty.png");
     ResourceLocation LIKE_TEXTURE = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/like_icon.png");
     ResourceLocation LIKED_TEXTURE = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/liked_icon.png");
 

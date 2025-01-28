@@ -1,6 +1,5 @@
-package com.leonimust.spoticraft.common.server;
+package com.leonimust.spoticraft.forge.server;
 
-import com.leonimust.spoticraft.forge.server.SpotifyAuthHandler;
 import fi.iki.elonen.NanoHTTPD;
 
 import java.io.IOException;

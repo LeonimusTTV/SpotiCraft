@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 
-import com.leonimust.spoticraft.common.server.CallbackServer;
 import com.leonimust.spoticraft.forge.client.TokenStorage;
 import java.io.IOException;
 import java.net.URL;

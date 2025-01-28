@@ -1,7 +1,6 @@
 package com.leonimust.spoticraft.neoforge.server;
 
 import com.leonimust.spoticraft.neoforge.client.TokenStorage;
-import com.leonimust.spoticraft.common.server.CallbackServer;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
