@@ -94,15 +94,19 @@ public class Item {
 
         // play the music
         if (type == itemType.TRACK) {
-            if (!Objects.equals(contextUri, "") && contextUri != null) {
-                SpotifyScreen.spotifyApi.startResumeUsersPlayback().context_uri(contextUri).offset((JsonParser.parseString("{\"uri\":\"" + this.itemUri + "\"}")).getAsJsonObject()).build().execute();
-            } else {
-                SpotifyScreen.spotifyApi.startResumeUsersPlayback().uris((JsonArray)JsonParser.parseString("[\"" + this.itemUri + "\"]")).build().execute();
+            try {
+                if (!Objects.equals(contextUri, "") && contextUri != null) {
+                    SpotifyScreen.spotifyApi.startResumeUsersPlayback().context_uri(contextUri).offset((JsonParser.parseString("{\"uri\":\"" + this.itemUri + "\"}")).getAsJsonObject()).build().execute();
+                } else {
+                    SpotifyScreen.spotifyApi.startResumeUsersPlayback().uris((JsonArray)JsonParser.parseString("[\"" + this.itemUri + "\"]")).build().execute();
+                }
+                // add a bit more delay
+                Thread.sleep(250);
+                //update the ui and wait to make sure the api give update to date info
+                SpotifyScreen.getInstance().syncDataWithDelay();
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                SpotifyScreen.getInstance().ShowTempMessage(e.getMessage());
             }
-            // add a bit more delay
-            Thread.sleep(250);
-            //update the ui and wait to make sure the api give update to date info
-            SpotifyScreen.getInstance().syncDataWithDelay();
         }
 
         if (type == itemType.ALBUM) {
@@ -114,10 +118,14 @@ public class Item {
         }
 
         if (type == itemType.PLAY_ALBUM_PLAYLIST) {
-            SpotifyScreen.spotifyApi.startResumeUsersPlayback().context_uri(this.contextUri).build().execute();
-            Thread.sleep(250);
-            //update the ui and wait to make sure the api give update to date info
-            SpotifyScreen.getInstance().syncDataWithDelay();
+            try {
+                SpotifyScreen.spotifyApi.startResumeUsersPlayback().context_uri(this.contextUri).build().execute();
+                Thread.sleep(250);
+                //update the ui and wait to make sure the api give update to date info
+                SpotifyScreen.getInstance().syncDataWithDelay();
+            } catch (IOException | SpotifyWebApiException | ParseException ignored) {
+
+            }
         }
 
         if (type == itemType.LIKED_TRACK) {
