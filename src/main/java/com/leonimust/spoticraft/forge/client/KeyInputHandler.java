@@ -11,7 +11,6 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Main.MOD_ID, value = Dist.CLIENT)
 public class KeyInputHandler {
     private static boolean wasPressed = false;
-    static SpotifyScreen spotifyScreen = new SpotifyScreen();
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
@@ -19,7 +18,7 @@ public class KeyInputHandler {
             if (!wasPressed) {
                 wasPressed = true;
                 TokenStorage.loadToken();
-                Minecraft.getInstance().setScreen(spotifyScreen);
+                Minecraft.getInstance().setScreen(new SpotifyScreen());
             }
         } else {
             wasPressed = false;
