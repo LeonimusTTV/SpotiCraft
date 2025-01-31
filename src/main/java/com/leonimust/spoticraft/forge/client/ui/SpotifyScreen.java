@@ -614,7 +614,7 @@ public class SpotifyScreen extends Screen {
         guiGraphics.drawString(this.font, text, centerX - textWidth / 2, y, color);
     }
 
-    private void ShowTempMessage(String message) {
+    public void ShowTempMessage(String message) {
         // Set text for the message
         textManager.setText(message, this.width / 2, this.height / 2, 16777215);
 
@@ -808,13 +808,17 @@ public class SpotifyScreen extends Screen {
             throw new RuntimeException(e);
         }
 
-        if (musicPlaying) {
-            spotifyApi.pauseUsersPlayback().build().executeAsync();
-            musicPlaying = false;
-        } else {
-            spotifyApi.startResumeUsersPlayback().build().executeAsync();
-            syncData();
-            musicPlaying = true;
+        try {
+            if (musicPlaying) {
+                spotifyApi.pauseUsersPlayback().build().execute();
+                musicPlaying = false;
+            } else {
+                spotifyApi.startResumeUsersPlayback().build().execute();
+                syncData();
+                musicPlaying = true;
+            }
+        } catch (Exception e) {
+            ShowTempMessage(e.getMessage());
         }
     }
 
