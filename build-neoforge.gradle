@@ -55,7 +55,6 @@ sourceSets {
     main {
         java {
             exclude 'com/leonimust/spoticraft/forge/**'
-            exclude 'com/leonimust/spoticraft/forge/ui/**'
         }
 
         resources {

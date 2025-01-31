@@ -124,7 +124,7 @@ public class SpotifyScreen extends Screen {
         final CompletableFuture<User> userFuture = spotifyApi.getCurrentUsersProfile().build().executeAsync();
 
         // Sync playback state when the screen is opened
-        syncData();
+        new Thread(this::syncData).start();
 
         // Set up a timer to update progress every second
         updateTimer = new Timer();
@@ -1233,6 +1233,7 @@ public class SpotifyScreen extends Screen {
         if (updateTimer != null) {
             updateTimer.cancel();
         }
+        instance = null;
         super.onClose();
     }
 
