@@ -23,9 +23,9 @@ SpotiCraft allow you to connect into your Spotify account and play your favorite
 - Album and Playlist - Finished
 - Home page (recommendation and featured category can't be used now due to spotify removing api endpoint)  - Finished
 - Go back, forward and home button - Finished
-- Like music and unlike it - TODO
-- Add and remove from playlist - TODO
-- UI in general -WIP
+- Like music and unlike it - Finished
+- Add and remove from playlist - Finished
+- UI in general - Finished
 - Improvement - WIP
 
 ## FAQ
@@ -40,9 +40,9 @@ If Minecraft still crash, make an issue and don't forget your log file
 Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.19, version before 1.19 will not be supported, at least for now.
 | Minecraft version | Mod version | Mod Loader | Link |
 |---|---|---|---|
-| 1.21.4 | 0.0.3-beta | Forge | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
-| 1.21.4 | 0.0.3-beta | NeoForge | [NeoForge](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.4-neoforge) |
-| 1.21.3 to 1.19 | - | Forge + NeoForge (1.20.2) | - |
+| 1.21.4 | 0.0.4-beta | Forge + NeoForge | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
+| 1.21.3 | 0.0.4-beta | Forge + NeoForge | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) |
+| 1.21.2 to 1.19 | - | Forge + NeoForge (1.20.2) | - |
 | before 1.19 | Not planned to be supported | - |  - |
 
 ## API
@@ -54,6 +54,11 @@ Use JAVA 21 as your JDK\
 Build and enjoy :3
 
 ## Changelog
+Beta 0.0.4
+- Fixed crash when image isn't downloaded successfully
+- Fixed crash when user doesn't have an active device
+- Fixed UI not refreshing correctly when closing
+
 Beta 0.0.3
 - Added NeoForge support for 1.21.4
 - Fixed crash when searching (doesn't occur all the time, but sometimes it does)
