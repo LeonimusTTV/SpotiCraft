@@ -5,7 +5,6 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 
@@ -20,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.function.Function;
 
 import static com.leonimust.spoticraft.Main.LOGGER;
 
@@ -28,7 +26,7 @@ public class ImageHandler {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final HashMap<String, ResourceLocation> CACHE = new HashMap<>();
     private static final File CACHE_DIR = new File(MC.gameDirectory, "spoticraft/cache");
-    private static final ResourceLocation EMTPY = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/empty.png");
+    private static final ResourceLocation EMTPY = new ResourceLocation(Main.MOD_ID, "textures/gui/empty.png");
 
     static {
         if (!CACHE_DIR.exists()) {
@@ -40,10 +38,8 @@ public class ImageHandler {
     }
 
     public static void drawImage(GuiGraphics graphics, ResourceLocation musicImage, int height, int imageHeight, int imageWidth) {
-        RenderSystem.setShaderTexture(0, musicImage); // Bind the texture
-        Function<ResourceLocation, RenderType> renderType = RenderType::guiTextured;
+        RenderSystem.setShaderTexture(0, musicImage);
         graphics.blit(
-                renderType,
                 musicImage,
                 5,
                 height - imageHeight - 5,
@@ -114,7 +110,7 @@ public class ImageHandler {
         DynamicTexture dynamicTexture = new DynamicTexture(nativeImage);
 
         // Register the texture in Minecraft's TextureManager
-        ResourceLocation textureLocation = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/spotify_cover_" + UUID.randomUUID());
+        ResourceLocation textureLocation = new ResourceLocation(Main.MOD_ID, "textures/gui/spotify_cover_" + UUID.randomUUID());
         MC.getTextureManager().register(textureLocation, dynamicTexture);
 
         // Cache the texture
@@ -130,8 +126,17 @@ public class ImageHandler {
         // Transfer pixels from BufferedImage to NativeImage
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int argb = bufferedImage.getRGB(x, y); // Get pixel in ARGB format
-                nativeImage.setPixel(x, y, argb);
+                int argb = bufferedImage.getRGB(x, y);
+
+                int alpha = (argb >> 24) & 0xFF;
+                int red   = (argb >> 16) & 0xFF;
+                int green = (argb >> 8) & 0xFF;
+                int blue  = argb & 0xFF;
+
+                // Convert to RGBA format
+                int rgba = (alpha << 24) | (blue << 16) | (green << 8) | red;
+
+                nativeImage.setPixelRGBA(x, y, rgba);
             }
         }
 

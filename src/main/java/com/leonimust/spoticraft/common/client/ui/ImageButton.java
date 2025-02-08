@@ -3,11 +3,8 @@ package com.leonimust.spoticraft.common.client.ui;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-
-import java.util.function.Function;
 
 public class ImageButton extends Button {
 
@@ -25,11 +22,8 @@ public class ImageButton extends Button {
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        // Use RenderType.text() to bind the texture for GUI rendering
-        Function<ResourceLocation, RenderType> renderType = RenderType::guiTextured;
 
         guiGraphics.blit(
-                renderType,
                 texture, // RenderType
                 this.getX(),               // X position on screen
                 this.getY(),               // Y position on screen
@@ -38,8 +32,7 @@ public class ImageButton extends Button {
                 this.getWidth(),           // Rendered width
                 this.getHeight(),          // Rendered height
                 textureWidth,              // Full texture width
-                textureHeight,             // Full texture height
-                0xFFFFFFFF                 // Color tint (white = no tint)
+                textureHeight              // Full texture height
         );
     }
 

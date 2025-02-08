@@ -29,7 +29,7 @@ public class CallbackServer extends NanoHTTPD {
             new Thread(() -> {
                 try {
                     //System.out.println(code.getFirst());
-                    SpotifyAuthHandler.exchangeCodeForToken(code.getFirst());
+                    SpotifyAuthHandler.exchangeCodeForToken(code.get(0));
 
                     this.stop();
                 } catch (Exception e) {

@@ -62,11 +62,11 @@ public class SpotifyScreen extends Screen {
     private TextManager textManager;
     private Timer tempMessageTimer;
 
-    ResourceLocation PLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/play.png");
-    ResourceLocation PAUSE_TEXTURE = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/pause.png");
-    ResourceLocation EMPTY_IMAGE = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/empty.png");
-    ResourceLocation LIKE_TEXTURE = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/like_icon.png");
-    ResourceLocation LIKED_TEXTURE = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/liked_icon.png");
+    ResourceLocation PLAY_TEXTURE = new ResourceLocation(Main.MOD_ID, "textures/gui/play.png");
+    ResourceLocation PAUSE_TEXTURE = new ResourceLocation(Main.MOD_ID, "textures/gui/pause.png");
+    ResourceLocation EMPTY_IMAGE = new ResourceLocation(Main.MOD_ID, "textures/gui/empty.png");
+    ResourceLocation LIKE_TEXTURE = new ResourceLocation(Main.MOD_ID, "textures/gui/like_icon.png");
+    ResourceLocation LIKED_TEXTURE = new ResourceLocation(Main.MOD_ID, "textures/gui/liked_icon.png");
 
     private final String[] trackList = {"off", "context", "track"};
     private int trackIndex = 0;
@@ -263,7 +263,7 @@ public class SpotifyScreen extends Screen {
                     this.height - 35,
                     13, // Button width
                     13, // Button height
-                    ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/next.png"),  // Use stop texture if playing, otherwise play texture
+                    new ResourceLocation(Main.MOD_ID, "textures/gui/next.png"),  // Use stop texture if playing, otherwise play texture
                     13, // Full texture width
                     13, // Full texture height
                     "gui.spoticraft.next",
@@ -293,7 +293,7 @@ public class SpotifyScreen extends Screen {
                     this.height - 35,
                     13, // Button width
                     13, // Button height
-                    ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/previous.png"),  // Use stop texture if playing, otherwise play texture
+                    new ResourceLocation(Main.MOD_ID, "textures/gui/previous.png"),  // Use stop texture if playing, otherwise play texture
                     13, // Full texture width
                     13, // Full texture height
                     "gui.spoticraft.previous",
@@ -326,7 +326,7 @@ public class SpotifyScreen extends Screen {
                     this.height - 35,
                     13, // Button width
                     13, // Button height
-                    ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/shuffle.png"),  // Use stop texture if playing, otherwise play texture
+                    new ResourceLocation(Main.MOD_ID, "textures/gui/shuffle.png"),  // Use stop texture if playing, otherwise play texture
                     13, // Full texture width
                     13, // Full texture height
                     shuffleState ? "gui.spoticraft.disable_shuffle" : "gui.spoticraft.enable_shuffle",
@@ -357,7 +357,7 @@ public class SpotifyScreen extends Screen {
                     this.height - 35,
                     13, // Button width
                     13, // Button height
-                    ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/repeat.png"),  // Use stop texture if playing, otherwise play texture
+                    new ResourceLocation(Main.MOD_ID, "textures/gui/repeat.png"),  // Use stop texture if playing, otherwise play texture
                     13, // Full texture width
                     13, // Full texture height
                     trackIndex == 0 ? "gui.spoticraft.enable_repeat" : trackIndex == 1 ? "gui.spoticraft.enable_repeat_one" : "gui.spoticraft.disable_repeat",
@@ -392,7 +392,7 @@ public class SpotifyScreen extends Screen {
                     4,
                     13, // Button width
                     13, // Button height
-                    ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/go_back.png"),  // Use stop texture if playing, otherwise play texture
+                    new ResourceLocation(Main.MOD_ID, "textures/gui/go_back.png"),  // Use stop texture if playing, otherwise play texture
                     13, // Full texture width
                     13, // Full texture height
                     "gui.spoticraft.go_back",
@@ -407,7 +407,7 @@ public class SpotifyScreen extends Screen {
                     4,
                     13, // Button width
                     13, // Button height
-                    ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/go_forward.png"),  // Use stop texture if playing, otherwise play texture
+                    new ResourceLocation(Main.MOD_ID, "textures/gui/go_forward.png"),  // Use stop texture if playing, otherwise play texture
                     13, // Full texture width
                     13, // Full texture height
                     "gui.spoticraft.go_forward",
@@ -422,7 +422,7 @@ public class SpotifyScreen extends Screen {
                     3,
                     15, // Button width
                     15, // Button height
-                    ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/home.png"),  // Use stop texture if playing, otherwise play texture
+                    new ResourceLocation(Main.MOD_ID, "textures/gui/home.png"),  // Use stop texture if playing, otherwise play texture
                     15, // Full texture width
                     15, // Full texture height
                     "gui.spoticraft.home",
@@ -852,7 +852,7 @@ public class SpotifyScreen extends Screen {
         mainItems.clear();
 
         mainItems.add(new Item(
-                ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/play.png"),
+                new ResourceLocation(Main.MOD_ID, "textures/gui/play.png"),
                 "Play Playlist",
                 "",
                 "",
@@ -886,7 +886,7 @@ public class SpotifyScreen extends Screen {
         mainItems.clear();
 
         mainItems.add(new Item(
-                ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/play.png"),
+                new ResourceLocation(Main.MOD_ID, "textures/gui/play.png"),
                 "Play Album",
                 "",
                 "",
@@ -1051,7 +1051,7 @@ public class SpotifyScreen extends Screen {
         playlistItems.clear();
 
         playlistItems.add(new Item(
-                ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/liked_songs.png"),
+                new ResourceLocation(Main.MOD_ID, "textures/gui/liked_songs.png"),
                 "Liked Songs",
                 "",
                 "",
@@ -1100,26 +1100,26 @@ public class SpotifyScreen extends Screen {
         if (itemCache.isEmpty() || itemCache.size() == 1)
             return;
 
-        itemCacheForward.addLast(new ArrayList<>(mainItems));
+        itemCacheForward.add(new ArrayList<>(mainItems));
         mainItems.clear();
-        mainItems = new ArrayList<>(itemCache.getLast());
+        mainItems = new ArrayList<>(itemCache.get(itemCache.toArray().length-1));
         mainPanel.setInfo(mainItems);
-        itemCache.removeLast();
+        itemCache.remove(itemCache.toArray().length-1);
     }
 
     public void goForward() {
         if (itemCacheForward.isEmpty())
             return;
 
-        itemCache.addLast(new ArrayList<>(mainItems));
+        itemCache.add(new ArrayList<>(mainItems));
         mainItems.clear();
-        mainItems = new ArrayList<>(itemCacheForward.getLast());
+        mainItems = new ArrayList<>(itemCacheForward.get(itemCacheForward.toArray().length-1));
         mainPanel.setInfo(mainItems);
-        itemCacheForward.removeLast();
+        itemCacheForward.remove(itemCacheForward.toArray().length-1);
     }
 
     private void saveLastAction() {
-        itemCache.addLast(new ArrayList<>(mainItems));
+        itemCache.add(new ArrayList<>(mainItems));
         System.out.println("save : "+itemCache);
     }
 
@@ -1193,7 +1193,7 @@ public class SpotifyScreen extends Screen {
     private ResourceLocation getImage(String url) {
         ResourceLocation image;
         if (url == null) {
-            image = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/default_playlist_image.png");
+            image = new ResourceLocation(Main.MOD_ID, "textures/gui/default_playlist_image.png");
         } else {
             image = ImageHandler.downloadImage(url);
         }

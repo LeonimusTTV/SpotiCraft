@@ -2,8 +2,8 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    //id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
 version = mod_version
@@ -13,13 +13,13 @@ base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
     
-    reobf = false
+    reobf = true
     copyIdeResources = true
     runs {
         // applies to all the run configs below
@@ -28,10 +28,15 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
 
             property 'forge.logging.console.level', 'debug'
+
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
         }
 
         client {
-            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
         }
 
@@ -71,9 +76,9 @@ sourceSets {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation 'org.nanohttpd:nanohttpd:2.3.1'
-    implementation 'org.json:json:20231013'
-    implementation 'se.michaelthelin.spotify:spotify-web-api-java:9.1.0'
+    minecraftLibrary 'org.nanohttpd:nanohttpd:2.3.1'
+    minecraftLibrary 'org.json:json:20231013'
+    minecraftLibrary 'se.michaelthelin.spotify:spotify-web-api-java:9.1.0'
 
     jarJar('org.apache.httpcomponents.core5:httpcore5:5.3.1') {
         jarJar.ranged(it, "[5.3,5.4)")
@@ -149,16 +154,12 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.register('jarJarForAll') {
     group = 'jarJar'
-    description = 'Builds jarJar for both Forge and NeoForge'
+    description = 'Builds jarJar for Forge'
 
     doLast {
         //really can't find a way to not use exec
         exec {
             commandLine './gradlew', 'jarJar'
-        }
-
-        exec {
-            commandLine './gradlew', 'jarJar', '--build-file=build-neoforge.gradle'
         }
     }
 }
