@@ -58,7 +58,7 @@ public class ItemScrollPanel extends ScrollPanel {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) { // Left mouse button
+        if (button == 0 && this.bottom >= mouseY) { // Left mouse button
             int relativeY = top + border - (int) scrollDistance; // Starting Y position, accounting for scrolling
 
             for (Item item : items) {
