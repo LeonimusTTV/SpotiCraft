@@ -3,7 +3,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    //id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
 version = mod_version
@@ -18,8 +18,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
-    
-    reobf = true
+
     copyIdeResources = true
     runs {
         // applies to all the run configs below
@@ -114,7 +113,6 @@ dependencies {
     jarJar('com.neovisionaries:nv-i18n:1.28') {
         jarJar.ranged(it, "[1.28,1.29)")
     }
-    implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -152,17 +150,19 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
-tasks.register('jarJarForAll') {
-    group = 'jarJar'
-    description = 'Builds jarJar for Forge'
-
+task jarJarRelease {
+    group = 'jarjar'
     doLast {
-        //really can't find a way to not use exec
-        exec {
-            commandLine './gradlew', 'jarJar'
+        tasks.jarJar {
+            archiveClassifier = ''
         }
     }
+    finalizedBy tasks.jarJar
 }
+
+jar.finalizedBy('reobfJar')
+tasks.jarJar.finalizedBy('reobfJarJar')
+
 
 eclipse {
     synchronizationTasks 'genEclipseRuns'
