@@ -1,18 +1,18 @@
 package com.leonimust.spoticraft.forge.client.ui;
 
 import com.leonimust.spoticraft.Main;
-import com.leonimust.spoticraft.forge.client.TokenStorage;
 import com.leonimust.spoticraft.common.client.ui.ImageButton;
 import com.leonimust.spoticraft.common.client.ui.ImageHandler;
 import com.leonimust.spoticraft.common.client.ui.TextManager;
+import com.leonimust.spoticraft.forge.client.TokenStorage;
 import com.leonimust.spoticraft.forge.server.SpotifyAuthHandler;
 import com.neovisionaries.i18n.CountryCode;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.hc.core5.http.ParseException;
 import org.json.JSONObject;
@@ -667,7 +667,7 @@ public class SpotifyScreen extends Screen {
             if (artist == null) {
                 continue;
             }
-            ResourceLocation artistImage = getImage(artist.getImages() == null ? null : artist.getImages()[0].getUrl());
+            ResourceLocation artistImage = getImage(artist.getImages() == null || artist.getImages().length == 0 ? null : artist.getImages()[0].getUrl());
 
             mainItems.add(new Item(
                     artistImage,
@@ -684,7 +684,7 @@ public class SpotifyScreen extends Screen {
             if (track == null) {
                 continue;
             }
-            ResourceLocation trackImage = getImage(track.getAlbum().getImages() == null ? null : track.getAlbum().getImages()[0].getUrl());
+            ResourceLocation trackImage = getImage(track.getAlbum().getImages() == null || track.getAlbum().getImages().length == 0 ? null : track.getAlbum().getImages()[0].getUrl());
 
             mainItems.add(new Item(
                     trackImage,
@@ -701,7 +701,7 @@ public class SpotifyScreen extends Screen {
             if (album == null) {
                 continue;
             }
-            ResourceLocation albumImage = getImage(album.getImages() == null ? null : album.getImages()[0].getUrl());
+            ResourceLocation albumImage = getImage(album.getImages() == null || album.getImages().length == 0 ? null : album.getImages()[0].getUrl());
 
             mainItems.add(new Item(
                     albumImage,
@@ -718,7 +718,7 @@ public class SpotifyScreen extends Screen {
             if (playlist == null) {
                 continue;
             }
-            ResourceLocation playlistImage = getImage(playlist.getImages() == null ? null : playlist.getImages()[0].getUrl());
+            ResourceLocation playlistImage = getImage(playlist.getImages() == null || playlist.getImages().length == 0 ? null : playlist.getImages()[0].getUrl());
 
             mainItems.add(new Item(
                     playlistImage,
@@ -853,7 +853,7 @@ public class SpotifyScreen extends Screen {
 
         mainItems.add(new Item(
                 ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/play.png"),
-                "Play Playlist",
+                Component.translatable("gui.spoticraft.play_playlist").getString(),
                 "",
                 "",
                 Item.itemType.PLAY_ALBUM_PLAYLIST,
@@ -887,7 +887,7 @@ public class SpotifyScreen extends Screen {
 
         mainItems.add(new Item(
                 ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/play.png"),
-                "Play Album",
+                Component.translatable("gui.spoticraft.play_album").getString(),
                 "",
                 "",
                 Item.itemType.PLAY_ALBUM_PLAYLIST,
@@ -986,7 +986,7 @@ public class SpotifyScreen extends Screen {
 
         for (int i = 0; i < Math.min(5, albums.getItems().length); i++) {
             AlbumSimplified album = albums.getItems()[i];
-            ResourceLocation albumImage = getImage(album.getImages() == null ? null : album.getImages()[0].getUrl());
+            ResourceLocation albumImage = getImage(album.getImages() == null || album.getImages().length == 0 ? null : album.getImages()[0].getUrl());
 
             mainItems.add(new Item(
                     albumImage,
@@ -1016,7 +1016,7 @@ public class SpotifyScreen extends Screen {
 
         mainItems.add(new Item(
                 EMPTY_IMAGE,
-                "New Releases",
+                Component.translatable("gui.spoticraft.new_releases").getString(),
                 "",
                 "",
                 Item.itemType.CATEGORY,
@@ -1026,7 +1026,7 @@ public class SpotifyScreen extends Screen {
         
         for (int i = 0; i < Math.min(5, newRelease.getItems().length); i++) {
             AlbumSimplified album = newRelease.getItems()[i];
-            ResourceLocation albumImage = getImage(album.getImages() == null ? null : album.getImages()[0].getUrl());
+            ResourceLocation albumImage = getImage(album.getImages() == null || album.getImages().length == 0 ? null : album.getImages()[0].getUrl());
 
             mainItems.add(new Item(
                     albumImage,
@@ -1052,7 +1052,7 @@ public class SpotifyScreen extends Screen {
 
         playlistItems.add(new Item(
                 ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/liked_songs.png"),
-                "Liked Songs",
+                Component.translatable("gui.spoticraft.liked_songs").getString(),
                 "",
                 "",
                 Item.itemType.LIKED_TRACK,
@@ -1061,7 +1061,7 @@ public class SpotifyScreen extends Screen {
 
         for (SavedAlbum savedAlbum : savedAlbumPaging.getItems()) {
             Album album = savedAlbum.getAlbum();
-            ResourceLocation albumImage = getImage(album.getImages() == null ? null : album.getImages()[0].getUrl());
+            ResourceLocation albumImage = getImage(album.getImages() == null || album.getImages().length == 0 ? null : album.getImages()[0].getUrl());
 
             playlistItems.add(new Item(
                     albumImage,
@@ -1074,7 +1074,7 @@ public class SpotifyScreen extends Screen {
         }
 
         for (PlaylistSimplified playlist : playlistSimplifiedPaging.getItems()) {
-            ResourceLocation playlistImage = getImage(playlist.getImages() == null ? null : playlist.getImages()[0].getUrl());
+            ResourceLocation playlistImage = getImage(playlist.getImages() == null || playlist.getImages().length == 0 ? null : playlist.getImages()[0].getUrl());
 
             playlistItems.add(new Item(
                     playlistImage,
