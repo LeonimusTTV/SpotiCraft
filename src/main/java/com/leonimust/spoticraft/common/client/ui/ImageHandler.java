@@ -41,9 +41,7 @@ public class ImageHandler {
 
     public static void drawImage(GuiGraphics graphics, ResourceLocation musicImage, int height, int imageHeight, int imageWidth) {
         RenderSystem.setShaderTexture(0, musicImage); // Bind the texture
-        Function<ResourceLocation, RenderType> renderType = RenderType::guiTextured;
         graphics.blit(
-                renderType,
                 musicImage,
                 5,
                 height - imageHeight - 5,
@@ -130,8 +128,17 @@ public class ImageHandler {
         // Transfer pixels from BufferedImage to NativeImage
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int argb = bufferedImage.getRGB(x, y); // Get pixel in ARGB format
-                nativeImage.setPixel(x, y, argb);
+                int argb = bufferedImage.getRGB(x, y);
+
+                int alpha = (argb >> 24) & 0xFF;
+                int red   = (argb >> 16) & 0xFF;
+                int green = (argb >> 8) & 0xFF;
+                int blue  = argb & 0xFF;
+
+                // Convert to RGBA format
+                int rgba = (alpha << 24) | (blue << 16) | (green << 8) | red;
+
+                nativeImage.setPixelRGBA(x, y, rgba);
             }
         }
 
