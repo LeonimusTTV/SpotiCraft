@@ -42,6 +42,8 @@ Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.
 |---|---|---|---|
 | 1.21.4 | 0.0.4-beta | Forge + NeoForge | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
 | 1.21.3 | 0.0.4-beta | Forge + NeoForge | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) |
+| 1.21.2 | - | - | - |
+| 1.21.1 | - | - | [1.21.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1) |
 | 1.20.1 | 0.0.4-beta | Forge | [1.20.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.1) |
 | 1.21.2 to 1.19 | - | Forge + NeoForge (1.20.2) | - |
 | before 1.19 | Not planned to be supported | - |  - |
