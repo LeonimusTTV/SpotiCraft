@@ -1,10 +1,15 @@
 package com.leonimust.spoticraft.common.client.ui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+
+import static org.lwjgl.opengl.GL11.*;
+
 
 public class ImageButton extends Button {
 
@@ -22,9 +27,18 @@ public class ImageButton extends Button {
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
+        // Set texture filtering to nearest-neighbor
+        RenderSystem.setShaderTexture(0, texture);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.texParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        RenderSystem.texParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         guiGraphics.blit(
-                texture, // RenderType
+                texture,
                 this.getX(),               // X position on screen
                 this.getY(),               // Y position on screen
                 0,                         // Start of texture U

@@ -20,5 +20,9 @@
   "gui.spoticraft.go_forward": "Go Forward",
   "gui.spoticraft.home": "Home",
   "gui.spoticraft.like": "Add to liked Songs",
-  "gui.spoticraft.liked": "Remove from liked Songs"
+  "gui.spoticraft.liked": "Remove from liked Songs",
+  "gui.spoticraft.liked_songs": "Liked Songs",
+  "gui.spoticraft.new_releases": "New Releases",
+  "gui.spoticraft.play_album": "Play Album",
+  "gui.spoticraft.play_playlist": "Play Playlist"
 }
