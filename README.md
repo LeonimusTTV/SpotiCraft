@@ -40,11 +40,11 @@ If Minecraft still crash, make an issue and don't forget your log file
 Once the mod is in a *finish* state in 1.21.4, it'll be ported from 1.21.4 to 1.19, version before 1.19 will not be supported, at least for now.
 | Minecraft version | Mod version | Mod Loader | Link |
 |---|---|---|---|
-| 1.21.4 | 0.0.4-beta | Forge + NeoForge | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
-| 1.21.3 | 0.0.4-beta | Forge + NeoForge | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) |
+| 1.21.4 | 0.0.5-beta | Forge + NeoForge | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) |
+| 1.21.3 | 0.0.5-beta | Forge + NeoForge | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) |
 | 1.21.2 | - | - | - |
-| 1.21.1 | - | - | [1.21.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1) |
-| 1.20.1 | 0.0.4-beta | Forge | [1.20.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.1) |
+| 1.21.1 | 0.0.5-beta | Forge + NeoForge | [1.21.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1) |
+| 1.20.1 | 0.0.5-beta | Forge | [1.20.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.1) |
 | 1.21.2 to 1.19 | - | Forge + NeoForge (1.20.2) | - |
 | before 1.19 | Not planned to be supported | - |  - |
 
@@ -57,6 +57,11 @@ Use JAVA 21 as your JDK\
 Build and enjoy :3
 
 ## Changelog
+Beta 0.0.5
+- Added Turk and French
+- Fixed pixel bleeding on 1.20.1
+- Fixed crash when searching for an artist, playlist or album without an image
+
 Beta 0.0.4
 - Fixed crash when image isn't downloaded successfully
 - Fixed crash when user doesn't have an active device
