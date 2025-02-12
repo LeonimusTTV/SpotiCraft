@@ -8,7 +8,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(Main.MOD_ID)
 public class SpotiCraft {
 
-    public SpotiCraft(FMLJavaModLoadingContext context) {
+    public SpotiCraft() {
 
     }
 }
