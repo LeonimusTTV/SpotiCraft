@@ -1,3 +1,6 @@
+# NEW USER PLEASE READ
+if you're planning to use the mod and you didn't used it before, you may not be able to do so, the Spotify app has hit the limit of 30 active users and if you launch the mod now it'll just crash, for news about this you can go [see this issue on github](https://github.com/LeonimusTTV/SpotiCraft/issues/2)
+
 # SpotiCraft - A new way of listening to music
 
 This is the **official** repo for this mod -> https://www.curseforge.com/minecraft/mc-mods/spoticraft-2 \
