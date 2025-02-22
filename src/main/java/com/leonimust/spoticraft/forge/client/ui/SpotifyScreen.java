@@ -24,6 +24,7 @@ import se.michaelthelin.spotify.model_objects.miscellaneous.CurrentlyPlayingCont
 import se.michaelthelin.spotify.model_objects.specification.*;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -111,7 +112,7 @@ public class SpotifyScreen extends Screen {
 
         try {
             TokenStorage.checkIfExpired();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
@@ -196,7 +197,13 @@ public class SpotifyScreen extends Screen {
     private void loginScreen() {
         this.drawCenteredString(graphics, Component.translatable("gui.spoticraft.not_logged").getString(), this.width / 2, 20, 16777215);
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_OPEN_IN_BROWSER, button ->
-                SpotifyAuthHandler.startAuthFlow()
+                {
+                    try {
+                        SpotifyAuthHandler.startAuthFlow();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
         ).bounds(this.width / 2 - 50, this.height / 2, 100, 20).build());
     }
 
@@ -271,7 +278,7 @@ public class SpotifyScreen extends Screen {
                         try {
                             try {
                                 TokenStorage.checkIfExpired();
-                            } catch (IOException e) {
+                            } catch (IOException | URISyntaxException e) {
                                 throw new RuntimeException(e);
                             }
 
@@ -301,7 +308,7 @@ public class SpotifyScreen extends Screen {
                         try {
                             try {
                                 TokenStorage.checkIfExpired();
-                            } catch (IOException e) {
+                            } catch (IOException | URISyntaxException e) {
                                 throw new RuntimeException(e);
                             }
 
@@ -334,7 +341,7 @@ public class SpotifyScreen extends Screen {
                         try {
                             try {
                                 TokenStorage.checkIfExpired();
-                            } catch (IOException e) {
+                            } catch (IOException | URISyntaxException e) {
                                 throw new RuntimeException(e);
                             }
 
@@ -365,7 +372,7 @@ public class SpotifyScreen extends Screen {
                         try {
                             try {
                                 TokenStorage.checkIfExpired();
-                            } catch (IOException e) {
+                            } catch (IOException | URISyntaxException e) {
                                 throw new RuntimeException(e);
                             }
 
@@ -479,7 +486,13 @@ public class SpotifyScreen extends Screen {
         this.drawCenteredString(graphics, Component.translatable("gui.spoticraft.no_premium").getString(), this.width / 2, 20, 16777215);
         this.drawCenteredString(graphics, Component.translatable("gui.spoticraft.no_premium_2").getString(), this.width / 2, 35, 16777215);
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_OPEN_IN_BROWSER, button ->
-                SpotifyAuthHandler.startAuthFlow()
+                {
+                    try {
+                        SpotifyAuthHandler.startAuthFlow();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
         ).bounds(this.width / 2 - 50, this.height / 2, 100, 20).build());
     }
 
@@ -566,8 +579,8 @@ public class SpotifyScreen extends Screen {
             // most of the time when the sync failed it's because of an expired token
             try {
                 TokenStorage.checkIfExpired();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+            } catch (IOException | URISyntaxException y) {
+                throw new RuntimeException(y);
             }
             ShowTempMessage("gui.spoticraft.sync_error");
         }
@@ -644,7 +657,7 @@ public class SpotifyScreen extends Screen {
     private void search(String query) {
         try {
             TokenStorage.checkIfExpired();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
         System.out.println("Searching for " + query);
@@ -804,7 +817,7 @@ public class SpotifyScreen extends Screen {
     private void toggleMusicPlayback() throws InterruptedException {
         try {
             TokenStorage.checkIfExpired();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
@@ -841,7 +854,7 @@ public class SpotifyScreen extends Screen {
     public void showPlaylist(String playlistId, String playlistContext) throws IOException, ParseException, SpotifyWebApiException {
         try {
             TokenStorage.checkIfExpired();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
@@ -873,7 +886,7 @@ public class SpotifyScreen extends Screen {
     public void showAlbum(String albumId, String albumContext) throws IOException, ParseException, SpotifyWebApiException {
         try {
             TokenStorage.checkIfExpired();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
@@ -907,7 +920,7 @@ public class SpotifyScreen extends Screen {
     private void showTrack(String trackId, String trackUri, String trackName, String context) throws IOException, ParseException, SpotifyWebApiException {
         try {
             TokenStorage.checkIfExpired();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
@@ -946,7 +959,7 @@ public class SpotifyScreen extends Screen {
     public void showLikedTracks() throws IOException, ParseException, SpotifyWebApiException {
         try {
             TokenStorage.checkIfExpired();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
@@ -969,7 +982,7 @@ public class SpotifyScreen extends Screen {
     public void showArtist(String artistId) throws IOException, ParseException, SpotifyWebApiException {
         try {
             TokenStorage.checkIfExpired();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
