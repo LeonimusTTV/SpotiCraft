@@ -2,20 +2,21 @@ package com.leonimust.spoticraft.neoforge.server;
 
 import com.leonimust.spoticraft.neoforge.client.TokenStorage;
 import net.minecraft.client.Minecraft;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Objects;
-
-import static com.leonimust.spoticraft.Main.LOGGER;
 
 //TODO optimize this if I feel like I wanna do it :p
 public class SpotifyAuthHandler {
@@ -26,122 +27,105 @@ public class SpotifyAuthHandler {
     private static final String REDIRECT_URI = "http://localhost:8080/callback";
     private static final String SCOPES = "user-read-playback-state user-modify-playback-state user-read-private playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-library-read user-library-modify";
     private static final String ENCODED_SCOPES = URLEncoder.encode(SCOPES, StandardCharsets.UTF_8);
+    private static String codeVerifier;
 
-    private static final String BASE_URL = "https://spoticraft.leonimust.com";
+    public static void startAuthFlow() throws Exception {
+        codeVerifier = generateRandomString();
+        String codeChallenge = generateCodeChallenge(codeVerifier);
+        openAuthUrl(codeChallenge);
+    }
 
-    public static void exchangeCodeForToken(String code) {
-        System.out.println("Exchange code for token: " + code);
-        LOGGER.info("Exchange code for token: {}", code);
+    private static String generateRandomString() {
+        SecureRandom random = new SecureRandom();
+        String possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder result = new StringBuilder();
 
-        String urlString = BASE_URL + "/exchangeCodeForToken?code=" + code;
-        LOGGER.info(urlString);
+        for (int i = 0; i < 64; i++) {
+            int index = random.nextInt(possible.length()); // Ensures valid index range (0-61)
+            result.append(possible.charAt(index));
+        }
 
-        HttpURLConnection connection = null;
-        try {
-            URL url = new URI(urlString).toURL();
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setConnectTimeout(5000);
-            connection.setReadTimeout(5000);
+        return result.toString();
+    }
 
-            int responseCode = connection.getResponseCode();
-            LOGGER.info("Response code: {}", responseCode);
+    private static String generateCodeChallenge(String codeVerifier) throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+    }
 
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                JSONObject responseBody = getJsonObject(connection);
+    public static void exchangeCodeForToken(String code) throws IOException, URISyntaxException {
+        String url = "https://accounts.spotify.com/api/token";
+        String data = "client_id=" + CLIENT_ID +
+                "&grant_type=authorization_code" +
+                "&code=" + URLEncoder.encode(code, StandardCharsets.UTF_8) +
+                "&redirect_uri=" + URLEncoder.encode(REDIRECT_URI, StandardCharsets.UTF_8) +
+                "&code_verifier=" + URLEncoder.encode(codeVerifier, StandardCharsets.UTF_8);
 
-                System.out.println("Access token response: " + responseBody);
-                LOGGER.info("Access token response: {}", responseBody);
+        HttpURLConnection conn = (HttpURLConnection) new URI(url).toURL().openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setDoOutput(true);
 
-                // Save the token data
-                TokenStorage.saveToken(
-                        responseBody.getString("access_token"),
-                        responseBody.getString("refresh_token"),
-                        responseBody.getInt("expires_in")
-                );
+        try (OutputStream os = conn.getOutputStream()) {
+            os.write(data.getBytes(StandardCharsets.UTF_8));
+        }
 
-                // reset the screen so everything loads again with the access_token now available
-                Minecraft.getInstance().setScreen(null);
-            } else {
-                LOGGER.info("Failed to exchange code: {}", connection.getResponseMessage());
-                throw new RuntimeException("Failed to exchange code: " + connection.getResponseMessage());
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to execute request: {}", e.getMessage());
-            throw new RuntimeException(e);
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            String response = reader.lines().reduce("", (acc, line) -> acc + line);
+            System.out.println(response);
+            JSONObject responseBody = new JSONObject(response);
+            System.out.println(responseBody);
+            TokenStorage.saveToken(
+                    responseBody.getString("access_token"),
+                    responseBody.getString("refresh_token"),
+                    responseBody.getInt("expires_in")
+            );
+            System.out.println("Access Token Response: " + response);
+
+            Minecraft.getInstance().setScreen(null);
         }
     }
 
-    private static @NotNull JSONObject getJsonObject(HttpURLConnection connection) throws IOException {
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)
-        );
-        StringBuilder responseBuilder = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            responseBuilder.append(line);
+    public static boolean refreshAccessToken(String refreshToken) throws IOException, URISyntaxException {
+        System.out.println("Refresh Token: " + refreshToken);
+        String url = "https://accounts.spotify.com/api/token";
+        String data = "client_id=" + CLIENT_ID +
+                "&grant_type=refresh_token" +
+                "&refresh_token=" + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8);
+
+        HttpURLConnection conn = (HttpURLConnection) new URI(url).toURL().openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setDoOutput(true);
+
+        try (OutputStream os = conn.getOutputStream()) {
+            os.write(data.getBytes(StandardCharsets.UTF_8));
         }
-        reader.close();
 
-        String responseBodyString = responseBuilder.toString();
-        return new JSONObject(responseBodyString);
-    }
-
-    public static boolean refreshAccessToken(String refreshToken) {
-        String urlString = BASE_URL + "/refreshToken?refresh_token=" + refreshToken;
-        LOGGER.info("Refreshing token with URL: {}", urlString);
-
-        HttpURLConnection connection = null;
-        try {
-            URL url = new URI(urlString).toURL();
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setConnectTimeout(5000);
-            connection.setReadTimeout(5000);
-
-            int responseCode = connection.getResponseCode();
-            LOGGER.info("Response code: {}", responseCode);
-
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                JSONObject responseBody = getJsonObject(connection);
-
-                System.out.println("Refresh token response: " + responseBody);
-                LOGGER.info("Refresh token response: {}", responseBody);
-
-                // Parse and store the new access token
-                TokenStorage.saveToken(
-                        responseBody.getString("access_token"),
-                        refreshToken,
-                        responseBody.getInt("expires_in")
-                );
-
-                return responseBody.getBoolean("success");
-            } else {
-                LOGGER.error("Failed to refresh token: {}", connection.getResponseMessage());
-                throw new RuntimeException("Failed to refresh token: " + connection.getResponseMessage());
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to execute request: {}", e.getMessage());
-            throw new RuntimeException(e);
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            String response = reader.lines().reduce("", (acc, line) -> acc + line);
+            JSONObject responseBody = new JSONObject(response);
+            System.out.println("Refresh Token Response: " + responseBody);
+            TokenStorage.saveToken(
+                    responseBody.getString("access_token"),
+                    refreshToken,
+                    responseBody.getInt("expires_in")
+            );
+            System.out.println("Refresh Token Response: " + response);
+            return true;
         }
     }
 
-    public static void startAuthFlow() {
+    private static void openAuthUrl(String codeChallenge) {
         try {
-            String authUrl =
-                    "https://accounts.spotify.com/authorize?client_id=" + CLIENT_ID +
-                            "&response_type=code&redirect_uri=" + URI.create(REDIRECT_URI) +
-                            "&scope=" + URI.create(ENCODED_SCOPES);
+            String authUrl = "https://accounts.spotify.com/authorize?" +
+                    "response_type=code" +
+                    "&client_id=" + CLIENT_ID +
+                    "&scope=" + URLEncoder.encode(SCOPES, StandardCharsets.UTF_8) +
+                    "&code_challenge_method=S256" +
+                    "&code_challenge=" + codeChallenge +
+                    "&redirect_uri=" + URLEncoder.encode(REDIRECT_URI, StandardCharsets.UTF_8);
 
             String osName = System.getProperty("os.name");
 

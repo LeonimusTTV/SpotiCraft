@@ -24,6 +24,7 @@ import se.michaelthelin.spotify.model_objects.miscellaneous.CurrentlyPlayingCont
 import se.michaelthelin.spotify.model_objects.specification.*;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -109,11 +110,7 @@ public class SpotifyScreen extends Screen {
 
         this.textManager = new TextManager(this.font);
 
-        try {
-            TokenStorage.checkIfExpired();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        checkIfExpired();
 
         // Initialize the Spotify API client
         spotifyApi = new SpotifyApi.Builder()
@@ -196,7 +193,13 @@ public class SpotifyScreen extends Screen {
     private void loginScreen() {
         this.drawCenteredString(graphics, Component.translatable("gui.spoticraft.not_logged").getString(), this.width / 2, 20, 16777215);
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_OPEN_IN_BROWSER, button ->
-                SpotifyAuthHandler.startAuthFlow()
+                {
+                    try {
+                        SpotifyAuthHandler.startAuthFlow();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
         ).bounds(this.width / 2 - 50, this.height / 2, 100, 20).build());
     }
 
@@ -269,11 +272,7 @@ public class SpotifyScreen extends Screen {
                     "gui.spoticraft.next",
                     button -> {
                         try {
-                            try {
-                                TokenStorage.checkIfExpired();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                            checkIfExpired();
 
                             spotifyApi.skipUsersPlaybackToNextTrack().build().execute();
                             syncDataWithDelay();
@@ -299,11 +298,7 @@ public class SpotifyScreen extends Screen {
                     "gui.spoticraft.previous",
                     button -> {
                         try {
-                            try {
-                                TokenStorage.checkIfExpired();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                            checkIfExpired();
 
                             spotifyApi.skipUsersPlaybackToPreviousTrack().build().execute();
                             syncDataWithDelay();
@@ -332,11 +327,7 @@ public class SpotifyScreen extends Screen {
                     shuffleState ? "gui.spoticraft.disable_shuffle" : "gui.spoticraft.enable_shuffle",
                     button -> {
                         try {
-                            try {
-                                TokenStorage.checkIfExpired();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                            checkIfExpired();
 
                             spotifyApi.toggleShuffleForUsersPlayback(!shuffleState).build().execute();
                             shuffleState = !shuffleState;
@@ -363,11 +354,7 @@ public class SpotifyScreen extends Screen {
                     trackIndex == 0 ? "gui.spoticraft.enable_repeat" : trackIndex == 1 ? "gui.spoticraft.enable_repeat_one" : "gui.spoticraft.disable_repeat",
                     button -> {
                         try {
-                            try {
-                                TokenStorage.checkIfExpired();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                            checkIfExpired();
 
                             trackIndex = (trackIndex + 1) % trackList.length;
                             spotifyApi.setRepeatModeOnUsersPlayback(trackList[trackIndex]).build().execute();
@@ -479,7 +466,13 @@ public class SpotifyScreen extends Screen {
         this.drawCenteredString(graphics, Component.translatable("gui.spoticraft.no_premium").getString(), this.width / 2, 20, 16777215);
         this.drawCenteredString(graphics, Component.translatable("gui.spoticraft.no_premium_2").getString(), this.width / 2, 35, 16777215);
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_OPEN_IN_BROWSER, button ->
-                SpotifyAuthHandler.startAuthFlow()
+                {
+                    try {
+                        SpotifyAuthHandler.startAuthFlow();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
         ).bounds(this.width / 2 - 50, this.height / 2, 100, 20).build());
     }
 
@@ -493,11 +486,7 @@ public class SpotifyScreen extends Screen {
         Main.LOGGER.info("Syncing data");
 
         try {
-            try {
-                TokenStorage.checkIfExpired();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            checkIfExpired();
 
             CurrentlyPlayingContext context = spotifyApi.getInformationAboutUsersCurrentPlayback().build().execute();
 
@@ -564,11 +553,7 @@ public class SpotifyScreen extends Screen {
         } catch (Exception e) {
             System.out.println("Failed to sync data : " + e.getMessage());
             // most of the time when the sync failed it's because of an expired token
-            try {
-                TokenStorage.checkIfExpired();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            checkIfExpired();
             ShowTempMessage("gui.spoticraft.sync_error");
         }
     }
@@ -642,11 +627,7 @@ public class SpotifyScreen extends Screen {
     }
 
     private void search(String query) {
-        try {
-            TokenStorage.checkIfExpired();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        checkIfExpired();
         System.out.println("Searching for " + query);
         CompletableFuture<Paging<Track>> pagingFutureTrack = spotifyApi.searchTracks(query).build().executeAsync();
         CompletableFuture<Paging<AlbumSimplified>> pagingFutureAlbum = spotifyApi.searchAlbums(query).build().executeAsync();
@@ -802,11 +783,7 @@ public class SpotifyScreen extends Screen {
 
     // ui controls
     private void toggleMusicPlayback() throws InterruptedException {
-        try {
-            TokenStorage.checkIfExpired();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        checkIfExpired();
 
         try {
             if (musicPlaying) {
@@ -827,11 +804,7 @@ public class SpotifyScreen extends Screen {
 
         // Send the volume update to Spotify API
         try {
-            try {
-                TokenStorage.checkIfExpired();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            checkIfExpired();
             spotifyApi.setVolumeForUsersPlayback(currentVolume).build().executeAsync();
         } catch (Exception e) {
             ShowTempMessage("Failed to set volume: " + e.getMessage());
@@ -839,11 +812,7 @@ public class SpotifyScreen extends Screen {
     }
 
     public void showPlaylist(String playlistId, String playlistContext) throws IOException, ParseException, SpotifyWebApiException {
-        try {
-            TokenStorage.checkIfExpired();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        checkIfExpired();
 
         PlaylistTrack[] tracks = spotifyApi.getPlaylistsItems(playlistId).build().execute().getItems();
 
@@ -871,11 +840,7 @@ public class SpotifyScreen extends Screen {
     }
 
     public void showAlbum(String albumId, String albumContext) throws IOException, ParseException, SpotifyWebApiException {
-        try {
-            TokenStorage.checkIfExpired();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        checkIfExpired();
 
         Paging<TrackSimplified> tracks = spotifyApi.getAlbumsTracks(albumId).build().execute();
 
@@ -905,11 +870,7 @@ public class SpotifyScreen extends Screen {
     }
 
     private void showTrack(String trackId, String trackUri, String trackName, String context) throws IOException, ParseException, SpotifyWebApiException {
-        try {
-            TokenStorage.checkIfExpired();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        checkIfExpired();
 
         String url;
         if (trackCache.get(trackId) != null) {
@@ -944,11 +905,7 @@ public class SpotifyScreen extends Screen {
     }
 
     public void showLikedTracks() throws IOException, ParseException, SpotifyWebApiException {
-        try {
-            TokenStorage.checkIfExpired();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        checkIfExpired();
 
         Paging<SavedTrack> tracks = spotifyApi.getUsersSavedTracks().build().execute();
 
@@ -967,11 +924,7 @@ public class SpotifyScreen extends Screen {
     }
 
     public void showArtist(String artistId) throws IOException, ParseException, SpotifyWebApiException {
-        try {
-            TokenStorage.checkIfExpired();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        checkIfExpired();
 
         Track[] tracks = spotifyApi.getArtistsTopTracks(artistId, userCountryCode).build().execute();
         Paging<AlbumSimplified> albums = spotifyApi.getArtistsAlbums(artistId).build().execute();
@@ -1136,11 +1089,7 @@ public class SpotifyScreen extends Screen {
 
     private boolean changePositionInCurrentTrack() {
         try {
-            try {
-                TokenStorage.checkIfExpired();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            checkIfExpired();
 
             spotifyApi.seekToPositionInCurrentlyPlayingTrack(currentProgressMs).build().executeAsync();
         } catch (Exception e) {
@@ -1238,6 +1187,14 @@ public class SpotifyScreen extends Screen {
             updateTimer.cancel();
         }
         super.onClose();
+    }
+
+    private void checkIfExpired() {
+        try {
+            TokenStorage.checkIfExpired();
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
