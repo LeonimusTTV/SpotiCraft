@@ -9,6 +9,7 @@ import se.michaelthelin.spotify.SpotifyApi;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 
 import static com.leonimust.spoticraft.Main.LOGGER;
@@ -64,7 +65,7 @@ public class TokenStorage {
         }
     }
 
-    public static void checkIfExpired() throws IOException {
+    public static void checkIfExpired() throws IOException, URISyntaxException {
         synchronized (TokenStorage.class) { // Synchronize to avoid concurrent modifications
             if (token == null) {
                 loadToken();
