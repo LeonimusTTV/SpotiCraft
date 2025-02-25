@@ -24,5 +24,6 @@
   "gui.spoticraft.liked_songs": "Liked Songs",
   "gui.spoticraft.new_releases": "New Releases",
   "gui.spoticraft.play_album": "Play Album",
-  "gui.spoticraft.play_playlist": "Play Playlist"
+  "gui.spoticraft.play_playlist": "Play Playlist",
+  "gui.spoticraft.token_expired": "Your token didn't successfully refreshed, try to log yourself in again"
 }

@@ -24,7 +24,7 @@ public class SpotifyAuthHandler {
     // not the best way but 🤫
     private static final String CLIENT_ID = "d108b6364fff46f2b17c03145e48040a";
     // client secret was here 👀 no need to search for it, it has been refreshed :3
-    private static final String REDIRECT_URI = "http://localhost:8080/callback";
+    private static final String REDIRECT_URI = "http://127.0.0.1:12589/callback";
     private static final String SCOPES = "user-read-playback-state user-modify-playback-state user-read-private playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-library-read user-library-modify";
     private static String codeVerifier;
 
@@ -139,7 +139,7 @@ public class SpotifyAuthHandler {
             }
 
             // Start callback server
-            new CallbackServer(8080);
+            new CallbackServer(12589);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new RuntimeException(e);
