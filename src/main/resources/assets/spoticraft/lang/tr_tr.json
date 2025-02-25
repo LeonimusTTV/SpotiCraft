@@ -24,5 +24,6 @@
   "gui.spoticraft.liked_songs": "Sevilen Şarkılar",
   "gui.spoticraft.new_releases": "Yeni Çıkanlar",
   "gui.spoticraft.play_album": "Play Albüm",
-  "gui.spoticraft.play_playlist": "Oynatma Listesi"
+  "gui.spoticraft.play_playlist": "Oynatma Listesi",
+  "gui.spoticraft.token_expired": "Belirteciniz başarıyla yenilenmedi, tekrar giriş yapmayı deneyin"
 }
