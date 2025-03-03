@@ -5,6 +5,8 @@ import com.leonimust.spoticraft.common.client.ui.ImageButton;
 import com.leonimust.spoticraft.common.client.ui.ImageHandler;
 import com.leonimust.spoticraft.common.client.ui.TextManager;
 import com.leonimust.spoticraft.neoforge.client.TokenStorage;
+import com.leonimust.spoticraft.neoforge.client.ui.Item;
+import com.leonimust.spoticraft.neoforge.client.ui.ItemScrollPanel;
 import com.leonimust.spoticraft.neoforge.server.SpotifyAuthHandler;
 import com.neovisionaries.i18n.CountryCode;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,8 +29,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-
-import static com.leonimust.spoticraft.neoforge.client.TokenStorage.token;
 
 public class SpotifyScreen extends Screen {
     private static SpotifyScreen instance;
@@ -103,7 +103,7 @@ public class SpotifyScreen extends Screen {
 
     @Override
     public void init() {
-        if (token == null) {
+        if (TokenStorage.token == null) {
             return;
         }
 
@@ -116,8 +116,8 @@ public class SpotifyScreen extends Screen {
 
         // Initialize the Spotify API client
         spotifyApi = new SpotifyApi.Builder()
-                .setAccessToken(token.getString("access_token"))
-                .setRefreshToken(token.getString("refresh_token"))
+                .setAccessToken(TokenStorage.token.getString("access_token"))
+                .setRefreshToken(TokenStorage.token.getString("refresh_token"))
                 .build();
 
         final CompletableFuture<User> userFuture = spotifyApi.getCurrentUsersProfile().build().executeAsync();
@@ -175,7 +175,7 @@ public class SpotifyScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
         // if no token is found that means the user is not logged
-        if (token == null) {
+        if (TokenStorage.token == null) {
             loginScreen();
         } else {
             // check if the user has premium or not
@@ -729,7 +729,7 @@ public class SpotifyScreen extends Screen {
                     this.font));
         }
 
-        addEmpty();
+        addEmpty(mainItems);
 
         mainPanel.setInfo(mainItems);
     }
@@ -852,7 +852,7 @@ public class SpotifyScreen extends Screen {
             showTrack(track.getTrack().getId(), track.getTrack().getUri(), track.getTrack().getName(), playlistContext);
         }
 
-        addEmpty();
+        addEmpty(mainItems);
 
         mainPanel.setInfo(mainItems);
     }
@@ -882,7 +882,7 @@ public class SpotifyScreen extends Screen {
             showTrack(track.getId(), track.getUri(), track.getName(), albumContext);
         }
 
-        addEmpty();
+        addEmpty(mainItems);
 
         mainPanel.setInfo(mainItems);
     }
@@ -936,7 +936,7 @@ public class SpotifyScreen extends Screen {
             showTrack(track.getId(), track.getUri(), track.getName(), "");
         }
 
-        addEmpty();
+        addEmpty(mainItems);
 
         mainPanel.setInfo(mainItems);
     }
@@ -970,7 +970,7 @@ public class SpotifyScreen extends Screen {
             ));
         }
 
-        addEmpty();
+        addEmpty(mainItems);
 
         mainPanel.setInfo(mainItems);
     }
@@ -1010,7 +1010,7 @@ public class SpotifyScreen extends Screen {
             ));
         }
 
-        addEmpty();
+        addEmpty(mainItems);
 
         mainPanel.setInfo(mainItems);
     }
@@ -1060,7 +1060,7 @@ public class SpotifyScreen extends Screen {
         //System.out.println(Arrays.toString(spotifyApi.getCurrentUsersSavedAlbums().build().execute().getItems()));
 
         //TODO find a better fix for the bug where the last item isn't rendered correctly in the scroll panel
-        addEmpty();
+        addEmpty(playlistItems);
 
         if (playlistPanel != null) {
             playlistPanel.setInfo(playlistItems);
@@ -1071,26 +1071,26 @@ public class SpotifyScreen extends Screen {
         if (itemCache.isEmpty() || itemCache.size() == 1)
             return;
 
-        itemCacheForward.addLast(new ArrayList<>(mainItems));
+        itemCacheForward.add(new ArrayList<>(mainItems));
         mainItems.clear();
-        mainItems = new ArrayList<>(itemCache.getLast());
+        mainItems = new ArrayList<>(itemCache.get(itemCache.toArray().length-1));
         mainPanel.setInfo(mainItems);
-        itemCache.removeLast();
+        itemCache.remove(itemCache.toArray().length-1);
     }
 
     public void goForward() {
         if (itemCacheForward.isEmpty())
             return;
 
-        itemCache.addLast(new ArrayList<>(mainItems));
+        itemCache.add(new ArrayList<>(mainItems));
         mainItems.clear();
-        mainItems = new ArrayList<>(itemCacheForward.getLast());
+        mainItems = new ArrayList<>(itemCacheForward.get(itemCacheForward.toArray().length-1));
         mainPanel.setInfo(mainItems);
-        itemCacheForward.removeLast();
+        itemCacheForward.remove(itemCacheForward.toArray().length-1);
     }
 
     private void saveLastAction() {
-        itemCache.addLast(new ArrayList<>(mainItems));
+        itemCache.add(new ArrayList<>(mainItems));
         System.out.println("save : "+itemCache);
     }
 
@@ -1135,8 +1135,8 @@ public class SpotifyScreen extends Screen {
         return resizedText.toString();
     }
 
-    private void addEmpty() {
-        mainItems.add(new Item(
+    private void addEmpty(List<Item> itemsList) {
+        itemsList.add(new Item(
                 EMPTY_IMAGE,
                 "",
                 "",

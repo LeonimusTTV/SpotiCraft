@@ -13,13 +13,12 @@ base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
-    
-    reobf = false
+
     copyIdeResources = true
     runs {
         // applies to all the run configs below
@@ -109,7 +108,6 @@ dependencies {
     jarJar('com.neovisionaries:nv-i18n:1.28') {
         jarJar.ranged(it, "[1.28,1.29)")
     }
-    implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -147,6 +145,21 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
+tasks.register('jarJarRelease') {
+    group = 'jarjar'
+
+    doLast {
+        tasks.jarJar {
+            archiveClassifier = ''
+        }
+    }
+    finalizedBy tasks.jarJar
+}
+
+jar.finalizedBy('reobfJar')
+
+tasks.jarJar.finalizedBy('reobfJarJar')
+
 tasks.register('jarJarForAll') {
     group = 'jarJar'
     description = 'Builds jarJar for both Forge and NeoForge'
@@ -154,7 +167,7 @@ tasks.register('jarJarForAll') {
     doLast {
         //really can't find a way to not use exec
         exec {
-            commandLine './gradlew', 'jarJar'
+            commandLine './gradlew', 'jarJarRelease'
         }
 
         exec {

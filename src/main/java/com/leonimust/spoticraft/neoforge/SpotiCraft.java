@@ -9,7 +9,7 @@ import net.neoforged.fml.common.Mod;
 @Mod(Main.MOD_ID)
 public class SpotiCraft {
 
-    public SpotiCraft(IEventBus modEventBus, ModContainer modContainer)
+    public SpotiCraft(IEventBus modEventBus)
     {
         //NeoForge.EVENT_BUS.register(this);
     }

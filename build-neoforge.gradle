@@ -19,7 +19,7 @@ base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 runs {
     configureEach {
         systemProperty 'forge.logging.markers', 'REGISTRIES'
@@ -126,6 +126,16 @@ tasks.withType(ProcessResources).configureEach {
 
     filesMatching(['META-INF/neoforge.mods.toml']) {
         expand replaceProperties
+    }
+
+    // Rename neoforge.mods.toml to mods.toml
+    doLast {
+        copy {
+            from("$buildDir/resources/main/META-INF/neoforge.mods.toml")
+            into("$buildDir/resources/main/META-INF")
+            rename("neoforge.mods.toml", "mods.toml")
+        }
+        delete("$buildDir/resources/main/META-INF/neoforge.mods.toml") // Remove the original file
     }
 }
 
