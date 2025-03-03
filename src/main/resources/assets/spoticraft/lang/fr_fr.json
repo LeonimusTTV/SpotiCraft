@@ -24,5 +24,6 @@
   "gui.spoticraft.liked_songs": "Chansons aimées",
   "gui.spoticraft.new_releases": "Nouveautés",
   "gui.spoticraft.play_album": "Lire l'album",
-  "gui.spoticraft.play_playlist": "Lire la playlist"
+  "gui.spoticraft.play_playlist": "Lire la playlist",
+  "gui.spoticraft.token_expired": "Votre jeton n'a pas été actualisé avec succès, essayez de vous connecter à nouveau."
 }
