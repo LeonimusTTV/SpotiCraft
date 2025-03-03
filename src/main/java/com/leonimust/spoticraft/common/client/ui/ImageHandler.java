@@ -28,7 +28,7 @@ public class ImageHandler {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final HashMap<String, ResourceLocation> CACHE = new HashMap<>();
     private static final File CACHE_DIR = new File(MC.gameDirectory, "spoticraft/cache");
-    private static final ResourceLocation EMTPY = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/empty.png");
+    private static final ResourceLocation EMTPY = new ResourceLocation(Main.MOD_ID, "textures/gui/empty.png");
 
     static {
         if (!CACHE_DIR.exists()) {
@@ -112,7 +112,7 @@ public class ImageHandler {
         DynamicTexture dynamicTexture = new DynamicTexture(nativeImage);
 
         // Register the texture in Minecraft's TextureManager
-        ResourceLocation textureLocation = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/spotify_cover_" + UUID.randomUUID());
+        ResourceLocation textureLocation = new ResourceLocation(Main.MOD_ID, "textures/gui/spotify_cover_" + UUID.randomUUID());
         MC.getTextureManager().register(textureLocation, dynamicTexture);
 
         // Cache the texture
