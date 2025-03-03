@@ -1,16 +1,13 @@
 package com.leonimust.spoticraft.common.client.ui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import java.util.function.Function;
 
 public class ImageButton extends Button {
 
@@ -28,17 +25,11 @@ public class ImageButton extends Button {
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-
-        // Set texture filtering to nearest-neighbor
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.texParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        RenderSystem.texParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        // Use RenderType.text() to bind the texture for GUI rendering
+        Function<ResourceLocation, RenderType> renderType = RenderType::guiTextured;
 
         guiGraphics.blit(
+                renderType,
                 texture, // RenderType
                 this.getX(),               // X position on screen
                 this.getY(),               // Y position on screen
@@ -47,7 +38,8 @@ public class ImageButton extends Button {
                 this.getWidth(),           // Rendered width
                 this.getHeight(),          // Rendered height
                 textureWidth,              // Full texture width
-                textureHeight              // Full texture height
+                textureHeight,             // Full texture height
+                0xFFFFFFFF                 // Color tint (white = no tint)
         );
     }
 

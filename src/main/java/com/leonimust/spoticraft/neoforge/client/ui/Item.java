@@ -5,12 +5,14 @@ import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class Item {
 
@@ -44,10 +46,12 @@ public class Item {
 
     public void draw(int x, int y, GuiGraphics graphics) {
         RenderSystem.setShaderTexture(0, image); // Bind the texture
+        Function<ResourceLocation, RenderType> renderType = RenderType::guiTextured;
         int imageHeight = 30;
         int imageWidth = 30;
 
         graphics.blit(
+                renderType,
                 image,
                 x,
                 y, // height - imageHeight - 5
