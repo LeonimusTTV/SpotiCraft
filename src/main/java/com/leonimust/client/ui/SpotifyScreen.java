@@ -1,4 +1,5 @@
 package com.leonimust.client.ui;
+
 import com.leonimust.client.TokenStorage;
 import com.leonimust.server.SpotifyAuthHandler;
 import com.neovisionaries.i18n.CountryCode;
@@ -14,7 +15,6 @@ import org.apache.hc.core5.http.ParseException;
 import org.json.JSONObject;
 import org.lwjgl.glfw.GLFW;
 import se.michaelthelin.spotify.SpotifyApi;
-import net.minecraft.client.gui.EditBox;
 import se.michaelthelin.spotify.enums.ProductType;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
@@ -50,7 +50,6 @@ public class SpotifyScreen extends Screen {
     private ImageButton likeButton;
 
     public static SpotifyApi spotifyApi;
-    private Timer updateTimer;
 
     private int barWidth;
     private final int barHeight = 4;
@@ -133,7 +132,7 @@ public class SpotifyScreen extends Screen {
         syncData();
 
         // Set up a timer to update progress every second
-        updateTimer = new Timer();
+        Timer updateTimer = new Timer();
         updateTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -208,7 +207,7 @@ public class SpotifyScreen extends Screen {
 
     private void mainScreen() throws IOException, ParseException, SpotifyWebApiException {
         if (playlistPanel == null) {
-            playlistPanel = new ItemScrollPanel(MinecraftClient.getInstance(), this.width / 3,this.height - 64, 20, 5);
+            playlistPanel = new ItemScrollPanel(this.width / 3,this.height - 64, 5, 20);
             // useful for first init
             playlistPanel.setInfo(playlistItems);
             // don't move this line down, if minecraft keep refreshing this panel and that the items list changes
@@ -217,7 +216,7 @@ public class SpotifyScreen extends Screen {
         }
 
         if (mainPanel == null) {
-            mainPanel = new ItemScrollPanel(MinecraftClient.getInstance(), this.width - this.width / 3 - 15,this.height - 65, 20, this.width/3+10);
+            mainPanel = new ItemScrollPanel(this.width - this.width / 3 - 15,this.height - 65, this.width/3+10, 20);
             // useful for first init
             mainPanel.setInfo(mainItems);
             // don't move this line down, if minecraft keep refreshing this panel and that the items list changes
@@ -371,9 +370,8 @@ public class SpotifyScreen extends Screen {
         }
 
         if (searchInput == null) {
-            // components seems to be useless here
-            searchInput = new TextFieldWidget(textRenderer, this.width/2 - this.width/8, 3, Text.of(""));
-            this.addDrawable(searchInput);
+            searchInput = new TextFieldWidget(textRenderer, this.width/2 - this.width/8, 3, this.width/4, 15, Text.empty());
+            this.addDrawableChild(searchInput);
         }
 
         if (goBackButton == null) {
@@ -439,7 +437,7 @@ public class SpotifyScreen extends Screen {
 
         if (likeButton == null && musicName != null) {
             likeButton = new ImageButton(
-                    imageWidth + 10 + (musicName.length() * 5) + 12,
+                    imageWidth + 10 + textRenderer.getWidth(musicName) + 2,
                     this.height - imageHeight +1,
                     10, // Button width
                     10, // Button height
@@ -635,7 +633,7 @@ public class SpotifyScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ENTER) {
+        if (keyCode == GLFW.GLFW_KEY_ENTER && searchInput.isFocused()) {
             search(searchInput.getText());
             return true; // Consume the event
         }
@@ -644,6 +642,10 @@ public class SpotifyScreen extends Screen {
     }
 
     private void search(String query) {
+        if (query.isEmpty()) {
+            return;
+        }
+
         if (checkIfExpired()) {return;}
         System.out.println("Searching for " + query);
         CompletableFuture<Paging<Track>> pagingFutureTrack = spotifyApi.searchTracks(query).build().executeAsync();
@@ -1193,7 +1195,7 @@ public class SpotifyScreen extends Screen {
 
             likeButton.setTooltip(likedSong ? "gui.spoticraft.liked" : "gui.spoticraft.like");
 
-            likeButton.setX(imageWidth + 10 + (musicName.length() * 5) + 12);
+            likeButton.setX(imageWidth + 10 + textRenderer.getWidth(musicName) + 2);
         }
     }
 
@@ -1207,6 +1209,4 @@ public class SpotifyScreen extends Screen {
             return true;
         }
     }
-
-    // ... rest of the class with similar conversions ...
 }

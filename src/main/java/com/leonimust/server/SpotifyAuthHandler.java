@@ -91,12 +91,14 @@ public class SpotifyAuthHandler {
         String url = "https://accounts.spotify.com/api/token";
         String data = "client_id=" + CLIENT_ID +
                 "&grant_type=refresh_token" +
-                "&refresh_token=" + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8);
+                "&refresh_token=" + refreshToken;
 
         HttpURLConnection conn = (HttpURLConnection) new URI(url).toURL().openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         conn.setDoOutput(true);
+
+        System.out.println("Sending refresh token: " + data);
 
         try (OutputStream os = conn.getOutputStream()) {
             os.write(data.getBytes(StandardCharsets.UTF_8));

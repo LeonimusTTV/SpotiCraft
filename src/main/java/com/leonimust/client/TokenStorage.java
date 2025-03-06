@@ -1,6 +1,6 @@
 package com.leonimust.client;
 
-//import com.leonimust.spoticraft.forge.client.ui.SpotifyScreen;
+import com.leonimust.client.ui.SpotifyScreen;
 import com.leonimust.server.SpotifyAuthHandler;
 import net.minecraft.client.MinecraftClient;
 import org.json.JSONObject;
@@ -80,10 +80,10 @@ public class TokenStorage {
                     throw new IOException("Failed to refresh the token");
                 }
 
-                /*SpotifyScreen.spotifyApi = new SpotifyApi.Builder()
+                SpotifyScreen.spotifyApi = new SpotifyApi.Builder()
                         .setAccessToken(token.getString("access_token"))
                         .setRefreshToken(token.getString("refresh_token"))
-                        .build();*/
+                        .build();
             }
         }
     }

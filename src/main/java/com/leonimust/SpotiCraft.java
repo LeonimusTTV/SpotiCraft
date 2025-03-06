@@ -2,7 +2,6 @@ package com.leonimust;
 
 import com.leonimust.client.TokenStorage;
 import com.leonimust.client.ui.SpotifyScreen;
-import com.leonimust.server.SpotifyAuthHandler;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;

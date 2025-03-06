@@ -8,7 +8,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class ImageButton extends ButtonWidget {
-
     private Identifier texture;
     private final int textureWidth;
     private final int textureHeight;
@@ -21,7 +20,8 @@ public class ImageButton extends ButtonWidget {
         this.setTooltip(Tooltip.of(Text.translatable(tooltipKey)));
     }
 
-    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+    @Override
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         context.drawTexture(
                 RenderLayer::getGuiTextured,
                 texture,

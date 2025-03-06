@@ -12,7 +12,6 @@ import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.function.Function;
 
 public class Item {
 
@@ -79,7 +78,7 @@ public class Item {
         System.out.println("Context uri: " + contextUri);
         System.out.println("Item type: " + type);
 
-        /*if (type == itemType.TRACK) {
+        if (type == itemType.TRACK) {
             try {
                 if (!Objects.equals(contextUri, "") && contextUri != null) {
                     SpotifyScreen.spotifyApi.startResumeUsersPlayback().context_uri(contextUri).offset(JsonParser.parseString("{\"uri\":\"" + this.itemUri + "\"}").getAsJsonObject()).build().execute();
@@ -116,6 +115,6 @@ public class Item {
 
         if (type == itemType.ARTIST) {
             SpotifyScreen.getInstance().showArtist(this.itemId);
-        }*/
+        }
     }
 }
