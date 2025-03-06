@@ -70,6 +70,10 @@ Use JAVA 21 as your JDK\
 Build and enjoy :3
 
 ## Changelog
+Beta 0.0.7
+- Fixed Like Button position
+- Fixed bugs
+
 Beta 0.0.6
 - Updated auth system because of Spotify new security policies
 - Other fixes
