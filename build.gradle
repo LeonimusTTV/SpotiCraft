@@ -147,9 +147,9 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
-tasks.register('jarJarForAll') {
-    group = 'jarJar'
-    description = 'Builds jarJar for both Forge and NeoForge'
+tasks.register('buildAll') {
+    group = 'build'
+    description = 'Builds for both Forge and NeoForge'
 
     doLast {
         //really can't find a way to not use exec
