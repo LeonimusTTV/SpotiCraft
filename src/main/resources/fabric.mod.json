@@ -3,25 +3,19 @@
 	"id": "spoticraft",
 	"version": "${version}",
 	"name": "SpotiCraft",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Mod to be able to use Spotify in Minecraft",
 	"authors": [
-		"Me!"
+		"LeonimusT"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/LeonimusTTV/SpotiCraft"
 	},
-	"license": "CC0-1.0",
+	"license": "All Rights Reserved",
 	"icon": "assets/spoticraft/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": [
-			"com.leonimust.SpotiCraft"
-		]
+		"client": ["com.leonimust.SpotiCraft"]
 	},
-	"mixins": [
-		"spoticraft.mixins.json"
-	],
 	"depends": {
 		"fabricloader": ">=0.16.10",
 		"minecraft": "~1.21.4",

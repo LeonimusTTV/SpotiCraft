@@ -34,8 +34,8 @@ public class TextManager {
     // Method to draw the text
     public void drawText(DrawContext drawContext) {
         if (this.shouldDraw && !this.text.isEmpty()) {
-            int textWidth = this.textRenderer.getWidth(this.text);
-            drawContext.drawText(this.textRenderer, Text.literal(this.text), centerX - textWidth / 2, y, color, false);
+            int textWidth = this.textRenderer.getWidth(Text.translatable(this.text).getString());
+            drawContext.drawText(this.textRenderer, Text.translatable(this.text).getString(), centerX - textWidth / 2, y, color, false);
         }
     }
 }

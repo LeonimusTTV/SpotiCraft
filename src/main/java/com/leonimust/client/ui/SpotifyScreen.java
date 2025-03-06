@@ -194,7 +194,7 @@ public class SpotifyScreen extends Screen {
     // screens
     private void loginScreen() {
         this.drawCenteredString(graphics, Text.translatable("gui.spoticraft.not_logged").getString(), this.width / 2, 20, 16777215);
-        this.addDrawableChild(ButtonWidget.builder(Text.of("Open in Browser"), button ->
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("chat.link.open"), button ->
                 {
                     try {
                         SpotifyAuthHandler.startAuthFlow();
@@ -609,6 +609,8 @@ public class SpotifyScreen extends Screen {
     }
 
     public void drawCenteredString(DrawContext guiGraphics, String text, int centerX, int y, int color) {
+        if (MinecraftClient.getInstance().textRenderer == null) {return;}
+        textRenderer = MinecraftClient.getInstance().textRenderer;
         // Calculate the text width and draw it centered
         int textWidth = textRenderer.getWidth(text);
         guiGraphics.drawText(textRenderer, text, centerX - textWidth / 2, y, color, false);
