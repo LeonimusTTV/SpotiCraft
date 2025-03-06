@@ -41,23 +41,24 @@ If Minecraft still crash, make an issue and don't forget your log file
 
 ## Version List
 For now, I'll support Forge + NeoForge from 1.21.4 (and upcoming versions if not a lot of the code need to be changed) to 1.19.
+I'm also testng Fabric support, for now only 1.21.4 is supported, if you've any problems, please create an issue.
 
-| Minecraft version | Mod version                 | Mod Loader       | Link                                                            |
-|-------------------|-----------------------------|------------------|-----------------------------------------------------------------|
-| 1.21.4            | 0.0.6-beta                  | Forge + NeoForge | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master)   |
-| 1.21.3            | 0.0.6-beta                  | Forge + NeoForge | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) |
-| 1.21.2            | 0.0.6-beta                  | NeoForge         | [1.21.2](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.2) |
-| 1.21.1            | 0.0.6-beta                  | Forge + NeoForge | [1.21.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1) |
-| 1.21              | 0.0.6-beta                  | Forge + NeoForge | [1.21](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21)     |
-| 1.20.6            | 0.0.6-beta                  | Forge + NeoForge | [1.20.6](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.6) |
-| 1.20.5            | 0.0.6-beta                  | NeoForge         | [1.20.5](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.5) |
-| 1.20.4            | 0.0.6-beta                  | Forge + NeoForge | [1.20.4](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.4) |
-| 1.20.3            | 0.0.6-beta                  | Forge + NeoForge | [1.20.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.3) |
-| 1.20.2            | 0.0.6-beta                  | Forge + NeoForge | [1.20.2](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.2) |
-| 1.20.1            | 0.0.6-beta                  | Forge            | [1.20.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.1) |
-| 1.20              | 0.0.6-beta                  | Forge            | [1.20](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20)     |
-| 1.19.4 to 1.19    | -                           | Forge            | -                                                               |
-| before 1.19       | Not planned to be supported | -                | -                                                               |
+| Minecraft version | Mod version                 | Mod Loader                | Link                                                            |
+|-------------------|-----------------------------|---------------------------|-----------------------------------------------------------------|
+| 1.21.4            | 0.0.7-beta                  | Forge + NeoForge + Fabric | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master)   |
+| 1.21.3            | 0.0.6-beta                  | Forge + NeoForge          | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) |
+| 1.21.2            | 0.0.6-beta                  | NeoForge                  | [1.21.2](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.2) |
+| 1.21.1            | 0.0.6-beta                  | Forge + NeoForge          | [1.21.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1) |
+| 1.21              | 0.0.6-beta                  | Forge + NeoForge          | [1.21](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21)     |
+| 1.20.6            | 0.0.6-beta                  | Forge + NeoForge          | [1.20.6](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.6) |
+| 1.20.5            | 0.0.6-beta                  | NeoForge                  | [1.20.5](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.5) |
+| 1.20.4            | 0.0.6-beta                  | Forge + NeoForge          | [1.20.4](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.4) |
+| 1.20.3            | 0.0.6-beta                  | Forge + NeoForge          | [1.20.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.3) |
+| 1.20.2            | 0.0.6-beta                  | Forge + NeoForge          | [1.20.2](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.2) |
+| 1.20.1            | 0.0.6-beta                  | Forge                     | [1.20.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.1) |
+| 1.20              | 0.0.6-beta                  | Forge                     | [1.20](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20)     |
+| 1.19.4 to 1.19    | -                           | Forge                     | -                                                               |
+| before 1.19       | Not planned to be supported | -                         | -                                                               |
 
 ## API
 ### The API will no longer be used after 0.0.5-beta due to Spotify new security policies

@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 1,
+	"id": "spoticraft",
+	"version": "${version}",
+	"name": "SpotiCraft",
+	"description": "${description}",
+	"authors": [
+		"LeonimusT"
+	],
+	"contact": {
+		"homepage": "https://github.com/LeonimusTTV/SpotiCraft"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/spoticraft/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"client": ["com.leonimust.SpotiCraft"]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

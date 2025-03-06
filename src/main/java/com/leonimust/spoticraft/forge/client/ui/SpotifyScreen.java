@@ -370,7 +370,6 @@ public class SpotifyScreen extends Screen {
         }
 
         if (searchInput == null) {
-            // components seems to be useless here
             searchInput = new EditBox(this.font, this.width/2 - this.width/8, 3, this.width/4,15, CommonComponents.EMPTY);
             this.addRenderableWidget(searchInput);
         }
@@ -438,7 +437,7 @@ public class SpotifyScreen extends Screen {
 
         if (likeButton == null && musicName != null) {
             likeButton = new ImageButton(
-                    imageWidth + 10 + (musicName.length() * 5) + 12,
+                    imageWidth + 10 + font.width(musicName) + 2,
                     this.height - imageHeight +1,
                     10, // Button width
                     10, // Button height
@@ -643,6 +642,10 @@ public class SpotifyScreen extends Screen {
     }
 
     private void search(String query) {
+        if (query.isEmpty()) {
+            return;
+        }
+
         if (checkIfExpired()) {return;}
         System.out.println("Searching for " + query);
         CompletableFuture<Paging<Track>> pagingFutureTrack = spotifyApi.searchTracks(query).build().executeAsync();
@@ -1192,7 +1195,7 @@ public class SpotifyScreen extends Screen {
 
             likeButton.setTooltip(likedSong ? "gui.spoticraft.liked" : "gui.spoticraft.like");
 
-            likeButton.setX(imageWidth + 10 + (musicName.length() * 5) + 12);
+            likeButton.setX(imageWidth + 10 + font.width(musicName) + 2);
         }
     }
 
