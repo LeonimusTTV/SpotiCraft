@@ -4,7 +4,7 @@ if you're planning to use the mod, and you didn't use it before, you may not be 
 # SpotiCraft - A new way of listening to music
 
 These are the **official** links to download the mod on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/spoticraft-2) and [Modrinth](https://modrinth.com/mod/spoticraft-2) \
-Another also called SpotiCraft exist, it's not maintained anymore, but you can always go check it -> https://github.com/IMB11/Spoticraft/tree/master (fabric only)
+Another mod also called SpotiCraft exist, it's not maintained anymore, but you can always go check it -> https://github.com/IMB11/Spoticraft/tree/master (fabric only)
 
 ## Table of Content
 [Description](#description)\
