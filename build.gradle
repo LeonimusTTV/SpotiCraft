@@ -1,6 +1,9 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 plugins {
 	id 'fabric-loom' version '1.10-SNAPSHOT'
 	id 'maven-publish'
+	id 'net.darkhax.curseforgegradle' version '1.1.26'
 }
 
 version = project.mod_version
@@ -44,6 +47,103 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.release = 21
+}
+
+tasks.register('publishAll') {
+	group = 'publishing'
+	description = 'Publish to Modrinth and CurseForge'
+
+	doLast {
+		//really can't find a way to not use exec
+		exec {
+			commandLine './gradlew', 'uploadToModrinth'
+		}
+
+		exec {
+			commandLine './gradlew', 'uploadToCurseForge'
+		}
+	}
+}
+
+tasks.register('uploadToModrinth', Exec) {
+	group = 'publishing'
+	description = 'Uploads the jar to Modrinth using the API'
+
+	// Ensure the build task has already run
+	dependsOn 'build'
+
+	def pattern = /(\d+\.\d+\.\d+)-(\d+\.\d+\.\d+)-(\w+)(?:-(\w+))?/
+	def matcher = version =~ pattern
+
+	if (!matcher.find()) {
+		println("nope")
+		return
+	}
+
+	def mcVersion = matcher.group(1)  // e.g. "1.21.4"
+	def modVersion = matcher.group(2) // e.g. "0.0.1"
+	def releaseType = matcher.group(3) // e.g. "release"
+	def extra = matcher.group(4) ?: "" // If group(4) is null, use an empty string
+
+	def formattedVersion = "[${mcVersion}] SpotiCraft ${modVersion} ${releaseType.capitalize()} ${extra ? extra.capitalize() : ''}".trim()
+
+	// JSON metadata – adjust the values as needed
+	def jsonData = """{
+      "name": "${formattedVersion}",
+      "version_number": "${version}",
+      "version_type": "${releaseType}",
+      "game_versions": ["${minecraft_version}"],
+      "loaders": ["${extra == "" ? "forge" : extra}"],
+      "dependencies": [
+      	{
+      		"dependency_type" : "required",
+      		"project_id" : "P7dR8mSH"
+      	}
+	  ],
+      "featured": true,
+      "status": "listed",
+      "project_id": "${modrinthProjectId}",
+      "file_parts": ["file"],
+      "primary_file": "file"
+    }"""
+
+	// Use curl to POST a multipart/form-data request to Modrinth API
+	commandLine "curl",
+			"-X", "POST",
+			"https://api.modrinth.com/v2/version",
+			"-H", "Authorization: ${System.getenv('MODRINTH_TOKEN')}",
+			"-F", "data=${jsonData};type=application/json",
+			"-F", "file=@${file("${buildDir}/libs/spoticraft-${mod_version}.jar")}"
+}
+
+tasks.register('uploadToCurseForge', TaskPublishCurseForge) {
+	group = 'publishing'
+
+	def pattern = /(\d+\.\d+\.\d+)-(\d+\.\d+\.\d+)-(\w+)(?:-(\w+))?/
+	def matcher = version =~ pattern
+
+	if (!matcher.find()) {
+		println("nope")
+		return
+	}
+
+	def mcVersion = matcher.group(1)  // e.g. "1.21.4"
+	def modVersion = matcher.group(2) // e.g. "0.0.1"
+	def releaseType = matcher.group(3) // e.g. "release"
+	def extra = matcher.group(4) ?: "" // If group(4) is null, use an empty string
+
+	def formattedVersion = "[${mcVersion}] SpotiCraft ${modVersion} ${releaseType.capitalize()} ${extra ? extra.capitalize() : ''}".trim()
+
+	apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+	def mainFile = upload(curseforgeProjectId, file("${buildDir}/libs/spoticraft-${mod_version}.jar"))
+
+	mainFile.releaseType = releaseType
+	mainFile.changelog = ''
+	mainFile.addGameVersion(mcVersion)
+	mainFile.addModLoader(extra == "" ? "forge" : extra)
+	mainFile.displayName = formattedVersion
+	mainFile.addRequirement("fabric-api")
 }
 
 java {

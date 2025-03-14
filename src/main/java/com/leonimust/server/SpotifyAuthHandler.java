@@ -110,7 +110,7 @@ public class SpotifyAuthHandler {
             System.out.println("Refresh Token Response: " + responseBody);
             TokenStorage.saveToken(
                     responseBody.getString("access_token"),
-                    refreshToken,
+                    responseBody.getString("refresh_token") != null ? responseBody.getString("refresh_token") : refreshToken,
                     responseBody.getInt("expires_in")
             );
             System.out.println("Refresh Token Response: " + response);
