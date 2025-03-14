@@ -45,7 +45,7 @@ I'm also testng Fabric support, for now only 1.21.4 is supported, if you've any 
 
 | Minecraft version | Mod version                 | Mod Loader                | Link                                                            |
 |-------------------|-----------------------------|---------------------------|-----------------------------------------------------------------|
-| 1.21.4            | 0.0.7-beta                  | Forge + NeoForge + Fabric | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master)   |
+| 1.21.4            | 0.0.1-release               | Forge + NeoForge + Fabric | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master)   |
 | 1.21.3            | 0.0.6-beta                  | Forge + NeoForge          | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) |
 | 1.21.2            | 0.0.6-beta                  | NeoForge                  | [1.21.2](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.2) |
 | 1.21.1            | 0.0.6-beta                  | Forge + NeoForge          | [1.21.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1) |
@@ -70,6 +70,12 @@ Use JAVA 21 as your JDK\
 Build and enjoy :3
 
 ## Changelog
+Release 0.0.1
+- Fixed refresh token not being updated after being used to refresh the access token
+- Fixed resize text in the ui, now using text width and not text length
+- Added repeat one and repeat enable icons to the ui
+- Added shuffle enable icons to the ui
+
 Beta 0.0.7
 - Fixed Like Button position
 - Fixed bugs
