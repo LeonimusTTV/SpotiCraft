@@ -5,7 +5,6 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 
@@ -28,7 +27,7 @@ public class ImageHandler {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final HashMap<String, ResourceLocation> CACHE = new HashMap<>();
     private static final File CACHE_DIR = new File(MC.gameDirectory, "spoticraft/cache");
-    private static final ResourceLocation EMTPY = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/empty.png");
+    private static final ResourceLocation EMPTY = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/empty.png");
 
     static {
         if (!CACHE_DIR.exists()) {
@@ -93,7 +92,7 @@ public class ImageHandler {
 
         } catch (Exception e) {
             LOGGER.error("Failed to load image from {}: {}", url, e.getMessage(), e);
-            return EMTPY; // Return null if something goes wrong
+            return EMPTY; // Return null if something goes wrong
         }
     }
 
@@ -102,7 +101,7 @@ public class ImageHandler {
         BufferedImage bufferedImage = ImageIO.read(file);
 
         if (bufferedImage == null) {
-            return EMTPY;
+            return EMPTY;
         }
 
         // Convert BufferedImage to NativeImage

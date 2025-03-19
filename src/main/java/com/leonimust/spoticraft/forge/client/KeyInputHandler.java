@@ -13,7 +13,7 @@ public class KeyInputHandler {
     private static boolean wasPressed = false;
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
+    public static void onClientTick(TickEvent.ClientTickEvent.Post event) {
         if (ClientSetup.openSpotifyKey.isDown()) {
             if (!wasPressed) {
                 wasPressed = true;
