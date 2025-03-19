@@ -46,7 +46,7 @@ I'm also testng Fabric support, for now only 1.21.4 is supported, if you've any 
 | Minecraft version | Mod version                 | Mod Loader                | Link                                                            |
 |-------------------|-----------------------------|---------------------------|-----------------------------------------------------------------|
 | 1.21.4            | 0.0.1-release               | Forge + NeoForge + Fabric | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master)   |
-| 1.21.3            | 0.0.6-beta                  | Forge + NeoForge          | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) |
+| 1.21.3            | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) |
 | 1.21.2            | 0.0.6-beta                  | NeoForge                  | [1.21.2](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.2) |
 | 1.21.1            | 0.0.6-beta                  | Forge + NeoForge          | [1.21.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1) |
 | 1.21              | 0.0.6-beta                  | Forge + NeoForge          | [1.21](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21)     |
