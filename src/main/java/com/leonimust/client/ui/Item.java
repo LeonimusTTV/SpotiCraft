@@ -5,7 +5,6 @@ import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
@@ -50,7 +49,7 @@ public class Item {
 
         RenderSystem.setShaderTexture(0, image); // Bind the texture
 
-        graphics.drawTexture(RenderLayer::getGuiTextured, image, x, y, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
+        graphics.drawTexture(image, x, y, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
         graphics.drawText(font, name, x + imageWidth + 5, type == itemType.CATEGORY || type == itemType.PLAY_ALBUM_PLAYLIST || type == itemType.LIKED_TRACK ? y + 12 : y + 8, 16777215, false);
 
         if (type == itemType.EMPTY || type == itemType.CATEGORY || type == itemType.PLAY_ALBUM_PLAYLIST || type == itemType.LIKED_TRACK) {

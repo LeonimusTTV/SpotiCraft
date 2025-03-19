@@ -1,11 +1,15 @@
 package com.leonimust.client.ui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_NEAREST;
 
 public class ImageButton extends ButtonWidget {
     private Identifier texture;
@@ -22,8 +26,18 @@ public class ImageButton extends ButtonWidget {
 
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
+        // Set texture filtering to nearest-neighbor
+        RenderSystem.setShaderTexture(0, texture);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+        RenderSystem.texParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        RenderSystem.texParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
         context.drawTexture(
-                RenderLayer::getGuiTextured,
                 texture,
                 this.getX(),
                 this.getY(),
