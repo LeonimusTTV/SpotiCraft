@@ -3,7 +3,6 @@ package com.leonimust.spoticraft.neoforge.client.ui;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import org.apache.hc.core5.http.ParseException;
@@ -80,8 +79,8 @@ public class ItemScrollPanel extends ScrollPanel {
     }
 
     @Override
-    public @NotNull NarratableEntry.NarrationPriority narrationPriority() {
-        return NarratableEntry.NarrationPriority.NONE;
+    public @NotNull NarrationPriority narrationPriority() {
+        return NarrationPriority.NONE;
     }
 
     @Override
