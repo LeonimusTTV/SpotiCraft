@@ -1,5 +1,6 @@
 package com.leonimust.client.ui;
 
+import com.leonimust.mixin.ScrollableWidgetMixin;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ScrollableWidget;
@@ -29,7 +30,7 @@ public class ItemScrollPanel extends ScrollableWidget {
     }
 
     @Override
-    protected int getContentsHeightWithPadding() {
+    protected int getContentsHeight() {
         return (items.size()-1) * itemHeight;
     }
 
@@ -39,7 +40,11 @@ public class ItemScrollPanel extends ScrollableWidget {
     }
 
     @Override
-    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
+    }
+
+    @Override
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         if (items == null || items.isEmpty()) return;
 
         // Enable scissor to clip content
@@ -62,9 +67,8 @@ public class ItemScrollPanel extends ScrollableWidget {
         // Disable scissor
         context.disableScissor();
 
-        // Draw scrollbar if needed
-        if (overflows()) {
-            drawScrollbar(context);
+        if (this.overflows()) {
+            ((ScrollableWidgetMixin) this).invokeDrawScrollbar(context);
         }
     }
 
@@ -79,18 +83,20 @@ public class ItemScrollPanel extends ScrollableWidget {
             }
         }
 
-        // Existing item click handling
-        int relativeY = (int) (this.getY() - this.getScrollY());
-        for (Item item : items) {
-            if (item != null && item.isMouseOver((int) mouseX, (int) mouseY, this.getX(), relativeY)) {
-                try {
-                    item.onClick();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+        if (button == 0 && this.getBottom() >= mouseY) {
+            // Existing item click handling
+            int relativeY = (int) (this.getY() - this.getScrollY());
+            for (Item item : items) {
+                if (item != null && item.isMouseOver((int) mouseX, (int) mouseY, this.getX(), relativeY)) {
+                    try {
+                        item.onClick();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    return true;
                 }
-                return true;
+                relativeY += itemHeight;
             }
-            relativeY += itemHeight;
         }
 
         return super.mouseClicked(mouseX, mouseY, button);
@@ -100,7 +106,7 @@ public class ItemScrollPanel extends ScrollableWidget {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (isScrolling) {
             double maxScrollY = getMaxScrollY();
-            double scrollDelta = (mouseY - startMouseY) * (maxScrollY / (this.height - this.getScrollbarThumbHeight()));
+            double scrollDelta = (mouseY - startMouseY) * (maxScrollY / (this.height - this.getContentsHeight()));
             setScrollY(MathHelper.clamp(startScrollY + scrollDelta, 0, maxScrollY));
             return true;
         }
@@ -119,8 +125,8 @@ public class ItemScrollPanel extends ScrollableWidget {
         int scrollbarX = this.getX() + this.width - 6; // Match scrollbarWidth
         return mouseX >= scrollbarX &&
                 mouseX <= scrollbarX + 6 && // Match scrollbarWidth
-                mouseY >= this.getScrollbarThumbY() &&
-                mouseY <= this.getScrollbarThumbY() + this.getScrollbarThumbHeight();
+                mouseY >= this.getScrollY() &&
+                mouseY <= this.getScrollY() + this.getContentsHeight();
     }
 
     @Override

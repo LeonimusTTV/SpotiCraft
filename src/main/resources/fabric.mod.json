@@ -16,9 +16,12 @@
 	"entrypoints": {
 		"client": ["com.leonimust.SpotiCraft"]
 	},
+	"mixins": [
+		"spoticraft.mixins.json"
+	],
 	"depends": {
 		"fabricloader": ">=0.16.10",
-		"minecraft": "~1.21.4",
+		"minecraft": "1.21.3",
 		"java": ">=21",
 		"fabric-api": "*"
 	},

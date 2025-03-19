@@ -212,7 +212,7 @@ public class SpotifyScreen extends Screen {
 
     private void mainScreen() throws IOException, ParseException, SpotifyWebApiException {
         if (playlistPanel == null) {
-            playlistPanel = new ItemScrollPanel(this.width / 3,this.height - 64, 5, 20);
+            playlistPanel = new ItemScrollPanel(this.width / 3 - 5,this.height - 64, 5, 20);
             // useful for first init
             playlistPanel.setInfo(playlistItems);
             // don't move this line down, if minecraft keep refreshing this panel and that the items list changes
@@ -221,7 +221,7 @@ public class SpotifyScreen extends Screen {
         }
 
         if (mainPanel == null) {
-            mainPanel = new ItemScrollPanel(this.width - this.width / 3 - 15,this.height - 65, this.width/3+10, 20);
+            mainPanel = new ItemScrollPanel(this.width - this.width / 3 - 20,this.height - 65, this.width/3+10, 20);
             // useful for first init
             mainPanel.setInfo(mainItems);
             // don't move this line down, if minecraft keep refreshing this panel and that the items list changes
