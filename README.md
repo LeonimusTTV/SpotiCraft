@@ -41,7 +41,7 @@ If Minecraft still crash, make an issue and don't forget your log file
 
 ## Version List
 For now, I'll support Forge + NeoForge from 1.21.4 (and upcoming versions if not a lot of the code need to be changed) to 1.19.
-I'm also testng Fabric support, for now only 1.21.4 is supported, if you've any problems, please create an issue.
+I'm also testng Fabric support, please create an issue.
 
 | Minecraft version | Mod version                 | Mod Loader                | Link                                                            |
 |-------------------|-----------------------------|---------------------------|-----------------------------------------------------------------|
