@@ -49,7 +49,7 @@ I'm also testng Fabric support, please create an issue.
 | 1.21.3            | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) |
 | 1.21.2            | 0.0.1-release               | NeoForge + Fabric         | [1.21.2](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.2) |
 | 1.21.1            | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1) |
-| 1.21              | 0.0.6-beta                  | Forge + NeoForge          | [1.21](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21)     |
+| 1.21              | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21)     |
 | 1.20.6            | 0.0.6-beta                  | Forge + NeoForge          | [1.20.6](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.6) |
 | 1.20.5            | 0.0.6-beta                  | NeoForge                  | [1.20.5](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.5) |
 | 1.20.4            | 0.0.6-beta                  | Forge + NeoForge          | [1.20.4](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.4) |
