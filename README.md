@@ -1,5 +1,7 @@
 # NEW USER PLEASE READ
-if you're planning to use the mod, and you didn't use it before, you may not be able to do so, the Spotify app has hit the limit of 30 active users and if you launch the mod it can crash, for news about this you can go [see this issue on GitHub](https://github.com/LeonimusTTV/SpotiCraft/issues/2)
+if you're planning to use the mod, and you didn't use it before, you may not be able to do so, if the Spotify app hits the 30 daily user limit, the mod may crash when trying to load data from your account, for news about this you can go [see this issue on GitHub](https://github.com/LeonimusTTV/SpotiCraft/issues/2) \
+\
+A workaround for this is to make your own Spotify app and build the mod yourself, you'll need to update it every new release and build it again, see the [How to build the mod](#how-to-build-the-mod)
 
 # SpotiCraft - A new way of listening to music
 
@@ -65,7 +67,17 @@ I'm also testng Fabric support, please create an issue.
 [SpotifyAuthHandler.java](https://github.com/LeonimusTTV/SpotiCraft/blob/master/src/main/java/com/leonimust/spoticraft/server/SpotifyAuthHandler.java#L31) use an API to get the access_token and refresh it, if you want to use yours you can get the [repo here](https://github.com/LeonimusTTV/SpotiCraft-API) if you want an example.
 
 ## How to build the mod
-Install [JAVA 21](https://adoptium.net/temurin/releases/) JDK\
+This guide uses [git](https://git-scm.com/downloads), [IntelliJ from JetBrains](https://www.jetbrains.com/idea/) and the [JAVA JDK from Adoptium](https://adoptium.net/temurin/releases/)
+
+1. Download the repo
+```bash
+git clone https://github.com/LeonimusTTV/SpotiCraft.git
+```
+2. Install [JAVA 21](https://adoptium.net/temurin/releases/) JDK or [JAVA 17](https://adoptium.net/temurin/releases/?version=17) JDK for minecraft 1.20.x
+3. Install [IntelliJ](https://www.jetbrains.com/idea/)
+4. Open IntelliJ and open the mod folder
+5. Wait for gradle to finish the installation
+6. If point 5 didn't work, TODO add images and finish this x3
 Use JAVA 21 as your JDK\
 Build and enjoy :3
 
