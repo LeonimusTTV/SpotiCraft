@@ -77,7 +77,7 @@ If you wanna use a specific version, please choose the right branch for that :\
 **FABRIC MOD ARE ONLY IN minecraftversion-fabric**\
 Please also refere to the [Version List](#version-list) to know what branch is on what version
 
-3. Install [JAVA 21](https://adoptium.net/temurin/releases/) JDK or [JAVA 17](https://adoptium.net/temurin/releases/?version=17) JDK for minecraft 1.20.x (don't forget to check the "Set or override JAVA_HOME variable")
+3. Install [JAVA 21](https://adoptium.net/temurin/releases/) JDK or [JAVA 17](https://adoptium.net/temurin/releases/?version=17) JDK for minecraft 1.20.x (don't forget to check the "Set or override JAVA_HOME variable")\
 ![image](https://github.com/user-attachments/assets/89a67534-6528-4234-9ca4-fc2cef225d4d)
 
 4. Install [IntelliJ](https://www.jetbrains.com/idea/)
