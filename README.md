@@ -45,13 +45,13 @@ If Minecraft still crash, make an issue and don't forget your log file
 For now, I'll support Forge + NeoForge from 1.21.4 (and upcoming versions if not a lot of the code need to be changed) to 1.19.
 I'm also testng Fabric support, please create an issue.
 
-| Minecraft version | Mod version                 | Mod Loader                | Link                                                            |
-|-------------------|-----------------------------|---------------------------|-----------------------------------------------------------------|
-| 1.21.4            | 0.0.1-release               | Forge + NeoForge + Fabric | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master)   |
-| 1.21.3            | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) |
-| 1.21.2            | 0.0.1-release               | NeoForge + Fabric         | [1.21.2](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.2) |
-| 1.21.1            | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1) |
-| 1.21              | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21)     |
+| Minecraft version | Mod version                 | Mod Loader                | Link                                                                                                                                   |
+|-------------------|-----------------------------|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| 1.21.4            | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21.4](https://github.com/LeonimusTTV/SpotiCraft/tree/master) [Fabric](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.4-fabric) |
+| 1.21.3            | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) [Fabric](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3-fabric) |
+| 1.21.2            | 0.0.1-release               | NeoForge + Fabric         | [1.21.2](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.2) [Fabric](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.2-fabric) |
+| 1.21.1            | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1) [Fabric](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1-fabric) |
+| 1.21              | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21) [Fabric](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21-fabric)       |
 | 1.20.6            | 0.0.6-beta                  | Forge + NeoForge          | [1.20.6](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.6) |
 | 1.20.5            | 0.0.6-beta                  | NeoForge                  | [1.20.5](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.5) |
 | 1.20.4            | 0.0.6-beta                  | Forge + NeoForge          | [1.20.4](https://github.com/LeonimusTTV/SpotiCraft/tree/1.20.4) |
