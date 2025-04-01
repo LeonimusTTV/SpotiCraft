@@ -135,11 +135,11 @@ Do **NOT** forget to check the "Download external annotations for dependencies",
 ![image](https://github.com/user-attachments/assets/a98ff868-a17a-46b4-b321-cd75005dac30)
 
 ### Build Time
-1. Now time to build
+1. Now time to build\
 **Forge**: for Forge, open the gradle menu at the right of your screen, go into jarJar and double click on "jarJar"\
 ![image](https://github.com/user-attachments/assets/a8948dc9-8790-4ff0-a705-95d7621a601b)
 
-**NeoForge**: for NeoForge you'll need to enter a command to build the mod (if you're using a version that only has NeoForge like 1.21.2, do the same as Forge)\
+**NeoForge**: for NeoForge you'll need to enter a command to build the mod (if you're using a version that only has NeoForge like 1.21.2, do the same as Forge)
 
 **Windows**:
 ```bash
@@ -154,11 +154,11 @@ Do **NOT** forget to check the "Download external annotations for dependencies",
 **Fabric**: for Fabric, open the gradle menu at the right of your screen, go into build and double click on "build"\
 ![image](https://github.com/user-attachments/assets/3e61e2bb-a5af-4a01-a90f-1473415f8ddd)
 
-2. Now open the "build" folder then "libs"\
+2. Now open the "build" folder then "libs"
 
-**Forge**: the only file you see (the one that ends with -all.jar) is the mod, put it into your mods folder\
+**Forge**: the only file you see (the one that ends with -all.jar) is the mod, put it into your mods folder
 
-**NeoForge**: you'll have two files, one with "-all.jar" at the end and one without, use the one that has "-all.jar", put it into your mods folder\
+**NeoForge**: you'll have two files, one with "-all.jar" at the end and one without, use the one that has "-all.jar", put it into your mods folder
 
 **Fabric**: you'll also have two files, one that ends with "-sources.jar" and one without, take the one that doens't end with "-sources.jar", take it and put it into your mods folder, don't forget the Fabric API !\
 ![image](https://github.com/user-attachments/assets/2be30c2d-fda7-4d3f-92ba-36812867880d)
