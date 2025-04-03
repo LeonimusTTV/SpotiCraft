@@ -1082,26 +1082,26 @@ public class SpotifyScreen extends Screen {
         if (itemCache.isEmpty() || itemCache.size() == 1)
             return;
 
-        itemCacheForward.addLast(new ArrayList<>(mainItems));
+        itemCacheForward.add(new ArrayList<>(mainItems));
         mainItems.clear();
-        mainItems = new ArrayList<>(itemCache.getLast());
+        mainItems = new ArrayList<>(itemCache.get(itemCache.toArray().length-1));
         mainPanel.setInfo(mainItems);
-        itemCache.removeLast();
+        itemCache.remove(itemCache.toArray().length-1);
     }
 
     public void goForward() {
         if (itemCacheForward.isEmpty())
             return;
 
-        itemCache.addLast(new ArrayList<>(mainItems));
+        itemCache.add(new ArrayList<>(mainItems));
         mainItems.clear();
-        mainItems = new ArrayList<>(itemCacheForward.getLast());
+        mainItems = new ArrayList<>(itemCacheForward.get(itemCacheForward.toArray().length-1));
         mainPanel.setInfo(mainItems);
-        itemCacheForward.removeLast();
+        itemCacheForward.remove(itemCacheForward.toArray().length-1);
     }
 
     private void saveLastAction() {
-        itemCache.addLast(new ArrayList<>(mainItems));
+        itemCache.add(new ArrayList<>(mainItems));
         System.out.println("save : "+itemCache);
     }
 
