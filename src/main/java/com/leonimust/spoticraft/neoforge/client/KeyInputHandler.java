@@ -1,7 +1,6 @@
 package com.leonimust.spoticraft.neoforge.client;
 
 import com.leonimust.spoticraft.Main;
-import com.leonimust.spoticraft.neoforge.client.TokenStorage;
 import com.leonimust.spoticraft.neoforge.client.ui.SpotifyScreen;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
