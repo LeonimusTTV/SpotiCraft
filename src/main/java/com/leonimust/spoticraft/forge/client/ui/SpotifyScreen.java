@@ -68,6 +68,11 @@ public class SpotifyScreen extends Screen {
     ResourceLocation EMPTY_IMAGE = new ResourceLocation(Main.MOD_ID, "textures/gui/empty.png");
     ResourceLocation LIKE_TEXTURE = new ResourceLocation(Main.MOD_ID, "textures/gui/like_icon.png");
     ResourceLocation LIKED_TEXTURE = new ResourceLocation(Main.MOD_ID, "textures/gui/liked_icon.png");
+    ResourceLocation SHUFFLE = new ResourceLocation(Main.MOD_ID, "textures/gui/shuffle.png");
+    ResourceLocation SHUFFLE_ENABLE = new ResourceLocation(Main.MOD_ID, "textures/gui/shuffle_enable.png");
+    ResourceLocation REPEAT = new ResourceLocation(Main.MOD_ID, "textures/gui/repeat.png");
+    ResourceLocation REPEAT_ENABLE = new ResourceLocation(Main.MOD_ID, "textures/gui/repeat_enable.png");
+    ResourceLocation REPEAT_ONE = new ResourceLocation(Main.MOD_ID, "textures/gui/repeat_1.png");
 
     private final String[] trackList = {"off", "context", "track"};
     private int trackIndex = 0;
@@ -323,7 +328,7 @@ public class SpotifyScreen extends Screen {
                     this.height - 35,
                     13, // Button width
                     13, // Button height
-                    new ResourceLocation(Main.MOD_ID, "textures/gui/shuffle.png"),  // Use stop texture if playing, otherwise play texture
+                    shuffleState ? SHUFFLE_ENABLE : SHUFFLE,  // Use stop texture if playing, otherwise play texture
                     13, // Full texture width
                     13, // Full texture height
                     shuffleState ? "gui.spoticraft.disable_shuffle" : "gui.spoticraft.enable_shuffle",
@@ -334,6 +339,7 @@ public class SpotifyScreen extends Screen {
                             spotifyApi.toggleShuffleForUsersPlayback(!shuffleState).build().execute();
                             shuffleState = !shuffleState;
                             shuffleButton.setTooltip(shuffleState ? "gui.spoticraft.disable_shuffle" : "gui.spoticraft.enable_shuffle");
+                            shuffleButton.setTexture(shuffleState ? SHUFFLE_ENABLE : SHUFFLE);
 
                             previousButton.setActive(!shuffleState);
                         } catch (IOException | SpotifyWebApiException | ParseException e) {
@@ -350,7 +356,7 @@ public class SpotifyScreen extends Screen {
                     this.height - 35,
                     13, // Button width
                     13, // Button height
-                    new ResourceLocation(Main.MOD_ID, "textures/gui/repeat.png"),  // Use stop texture if playing, otherwise play texture
+                    trackIndex == 0 ? REPEAT : trackIndex == 1 ? REPEAT_ENABLE : REPEAT_ONE,  // Use stop texture if playing, otherwise play texture
                     13, // Full texture width
                     13, // Full texture height
                     trackIndex == 0 ? "gui.spoticraft.enable_repeat" : trackIndex == 1 ? "gui.spoticraft.enable_repeat_one" : "gui.spoticraft.disable_repeat",
@@ -361,6 +367,7 @@ public class SpotifyScreen extends Screen {
                             trackIndex = (trackIndex + 1) % trackList.length;
                             spotifyApi.setRepeatModeOnUsersPlayback(trackList[trackIndex]).build().execute();
                             repeatButton.setTooltip(trackIndex == 0 ? "gui.spoticraft.enable_repeat" : trackIndex == 1 ? "gui.spoticraft.enable_repeat_one" : "gui.spoticraft.disable_repeat");
+                            repeatButton.setTexture(trackIndex == 0 ? REPEAT : trackIndex == 1 ? REPEAT_ENABLE : REPEAT_ONE);
                         } catch (IOException | SpotifyWebApiException | ParseException e) {
                             ShowTempMessage("gui.spoticraft.no_device");
                         }
@@ -370,7 +377,6 @@ public class SpotifyScreen extends Screen {
         }
 
         if (searchInput == null) {
-            // components seems to be useless here
             searchInput = new EditBox(this.font, this.width/2 - this.width/8, 3, this.width/4,15, CommonComponents.EMPTY);
             this.addRenderableWidget(searchInput);
         }
@@ -438,8 +444,8 @@ public class SpotifyScreen extends Screen {
 
         if (likeButton == null && musicName != null) {
             likeButton = new ImageButton(
-                    imageWidth + 10 + (musicName.length() * 5) + 12,
-                    this.height - imageHeight +1,
+                    imageWidth + 10 + font.width(musicName) + 2,
+                    this.height - imageHeight - 1,
                     10, // Button width
                     10, // Button height
                     likedSong ? LIKED_TEXTURE : LIKE_TEXTURE,
@@ -513,7 +519,7 @@ public class SpotifyScreen extends Screen {
                 musicPlaying = context.getIs_playing();
                 shuffleState = context.getShuffle_state();
                 currentVolume = context.getDevice().getVolume_percent();
-                musicName = resizeText(context.getItem().getName(), 16);
+                musicName = resizeText(context.getItem().getName(), 100);
                 // artist is down
 
                 for (int i = 0; i < trackList.length; i++) {
@@ -535,7 +541,7 @@ public class SpotifyScreen extends Screen {
                     String trackId = context.getItem().getId();
                     AlbumSimplified track = spotifyApi.getTrack(trackId).build().execute().getAlbum();
 
-                    artistName = resizeText(formatArtists(track.getArtists()), 14);
+                    artistName = resizeText(formatArtists(track.getArtists()), 80);
 
                     String url = track.getImages()[0].getUrl();
                     System.out.println("Track URL: " + url);
@@ -554,6 +560,7 @@ public class SpotifyScreen extends Screen {
 
                 if (repeatButton != null) {
                     repeatButton.setTooltip(trackIndex == 0 ? "gui.spoticraft.enable_repeat" : trackIndex == 1 ? "gui.spoticraft.enable_repeat_one" : "gui.spoticraft.disable_repeat");
+                    repeatButton.setTexture(trackIndex == 0 ? REPEAT : trackIndex == 1 ? REPEAT_ENABLE : REPEAT_ONE);
                 }
 
                 likedSong = isSongLiked(new String[]{currentTrackId});
@@ -643,6 +650,10 @@ public class SpotifyScreen extends Screen {
     }
 
     private void search(String query) {
+        if (query.isEmpty()) {
+            return;
+        }
+
         if (checkIfExpired()) {return;}
         System.out.println("Searching for " + query);
         CompletableFuture<Paging<Track>> pagingFutureTrack = spotifyApi.searchTracks(query).build().executeAsync();
@@ -668,7 +679,7 @@ public class SpotifyScreen extends Screen {
 
             mainItems.add(new Item(
                     artistImage,
-                    resizeText(artist.getName(), 40),
+                    resizeText(artist.getName(), 200),
                     "",
                     artist.getId(),
                     Item.itemType.ARTIST,
@@ -685,7 +696,7 @@ public class SpotifyScreen extends Screen {
 
             mainItems.add(new Item(
                     trackImage,
-                    resizeText(track.getName(), 40),
+                    resizeText(track.getName(), 200),
                     track.getUri(),
                     track.getId(),
                     Item.itemType.TRACK,
@@ -702,7 +713,7 @@ public class SpotifyScreen extends Screen {
 
             mainItems.add(new Item(
                     albumImage,
-                    resizeText(album.getName(), 40),
+                    resizeText(album.getName(), 200),
                     album.getUri(),
                     album.getId(),
                     Item.itemType.ALBUM,
@@ -719,7 +730,7 @@ public class SpotifyScreen extends Screen {
 
             mainItems.add(new Item(
                     playlistImage,
-                    resizeText(playlist.getName(), 17),
+                    resizeText(playlist.getName(), 200),
                     playlist.getUri(),
                     playlist.getId(),
                     Item.itemType.PLAYLIST,
@@ -902,7 +913,7 @@ public class SpotifyScreen extends Screen {
             JSONObject trackJSON = new JSONObject();
 
             trackJSON.put("url", url);
-            trackJSON.put("artists", formatArtists(trackAlbum.getArtists()));
+            trackJSON.put("artists", resizeText(formatArtists(trackAlbum.getArtists()), 80));
             trackJSON.put("uri", trackUri);
 
             trackCache.put(trackId, trackJSON);
@@ -912,7 +923,7 @@ public class SpotifyScreen extends Screen {
 
         mainItems.add(new Item(
                 trackImage,
-                resizeText(trackName, 40),
+                resizeText(trackName, 200),
                 trackUri,
                 "",
                 Item.itemType.TRACK,
@@ -959,7 +970,7 @@ public class SpotifyScreen extends Screen {
 
             mainItems.add(new Item(
                     albumImage,
-                    resizeText(album.getName(), 17),
+                    resizeText(album.getName(), 200),
                     album.getUri(),
                     album.getId(),
                     Item.itemType.ALBUM,
@@ -1034,7 +1045,7 @@ public class SpotifyScreen extends Screen {
 
             playlistItems.add(new Item(
                     albumImage,
-                    resizeText(album.getName(), 17),
+                    resizeText(album.getName(), 100),
                     album.getUri(),
                     album.getId(),
                     Item.itemType.ALBUM,
@@ -1047,7 +1058,7 @@ public class SpotifyScreen extends Screen {
 
             playlistItems.add(new Item(
                     playlistImage,
-                    resizeText(playlist.getName(), 17),
+                    resizeText(playlist.getName(), 100),
                     playlist.getUri(),
                     playlist.getId(),
                     Item.itemType.PLAYLIST,
@@ -1115,22 +1126,26 @@ public class SpotifyScreen extends Screen {
     }
 
     private String resizeText(String text, int maxSize) {
-        StringBuilder resizedText = new StringBuilder();
-        if (text.length() <= maxSize-3 ) {
+
+        int size = this.font.width(text);
+        System.out.println("text: "+ text + " maxSize: " + maxSize + " size: " + size);
+
+        if (size <= maxSize) {
             return text;
         }
 
-        for (int i = 0; i < text.length(); i++) {
-            if (i + 1 == maxSize) {
-                resizedText.append("...");
-                break;
-            }
+        for (int i = text.length() - 1; i > 0; i--) {
+            String res = text.substring(0, i);
+            if (this.font.width(res) <= maxSize) {
+                if (i - 3 < 0) {
+                    return text;
+                }
 
-            assert false;
-            resizedText.append(text.charAt(i));
+                return text.substring(0, i - 3) + "...";
+            }
         }
 
-        return resizedText.toString();
+        return text;
     }
 
     private void addEmpty(List<Item> itemsList) {
@@ -1192,7 +1207,7 @@ public class SpotifyScreen extends Screen {
 
             likeButton.setTooltip(likedSong ? "gui.spoticraft.liked" : "gui.spoticraft.like");
 
-            likeButton.setX(imageWidth + 10 + (musicName.length() * 5) + 12);
+            likeButton.setX(imageWidth + 10 + font.width(musicName) + 2);
         }
     }
 
