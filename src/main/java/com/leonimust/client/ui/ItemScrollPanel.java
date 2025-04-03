@@ -44,7 +44,7 @@ public class ItemScrollPanel extends ScrollableWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         if (items == null || items.isEmpty()) return;
 
         // Enable scissor to clip content
@@ -83,7 +83,7 @@ public class ItemScrollPanel extends ScrollableWidget {
             }
         }
 
-        if (button == 0 && this.getBottom() >= mouseY) {
+        if (button == 0 && this.getNavigationFocus().getBottom() >= mouseY) {
             // Existing item click handling
             int relativeY = (int) (this.getY() - this.getScrollY());
             for (Item item : items) {

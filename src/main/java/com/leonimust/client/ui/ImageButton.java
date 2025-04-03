@@ -25,7 +25,7 @@ public class ImageButton extends ButtonWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
