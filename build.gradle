@@ -4,7 +4,10 @@ plugins {
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'net.darkhax.curseforgegradle' version '1.1.26'
 }
+
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
 
 version = mod_version
 group = mod_group_id
@@ -36,6 +39,7 @@ minecraft {
         }
 
         client {
+            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
         }
 
@@ -163,6 +167,101 @@ task jarJarRelease {
 jar.finalizedBy('reobfJar')
 tasks.jarJar.finalizedBy('reobfJarJar')
 
+tasks.register('publishAll') {
+    group = 'publishing'
+    description = 'Publish to Modrinth and CurseForge for Forge and NeoForge'
+
+    doLast {
+        //really can't find a way to not use exec
+        exec {
+            commandLine './gradlew', 'uploadToModrinth'
+        }
+
+        exec {
+            commandLine './gradlew', 'uploadToCurseForge'
+        }
+    }
+}
+
+tasks.register('uploadToModrinth', Exec) {
+    group = 'publishing'
+    description = 'Uploads the jar to Modrinth using the API'
+
+    // Ensure the jarJar task has already run
+    dependsOn 'jarJar'
+
+    // Get the jar file produced by the jarJar task
+    def jarFile = tasks.named('jarJar').get().archiveFile.get().asFile
+
+    def pattern = /(\d+\.\d+)-(\d+\.\d+\.\d+)-(\w+)(?:-(\w+))?/
+    def matcher = version =~ pattern
+
+    if (!matcher.find()) {
+        println("nope")
+        return
+    }
+
+    def mcVersion = matcher.group(1)  // e.g. "1.21.4"
+    def modVersion = matcher.group(2) // e.g. "0.0.1"
+    def releaseType = matcher.group(3) // e.g. "release"
+    def extra = matcher.group(4) ?: "" // If group(4) is null, use an empty string
+
+    def formattedVersion = "[${mcVersion}] SpotiCraft ${modVersion} ${releaseType.capitalize()} ${extra ? extra.capitalize() : ''}".trim()
+
+    // JSON metadata – adjust the values as needed
+    def jsonData = """{
+      "name": "${formattedVersion}",
+      "version_number": "${version}",
+      "version_type": "${releaseType}",
+      "game_versions": ["${minecraft_version}"],
+      "loaders": ["${extra == "" ? "forge" : extra}"],
+      "dependencies": [],
+      "featured": true,
+      "status": "listed",
+      "project_id": "${modrinthProjectId}",
+      "file_parts": ["file"],
+      "primary_file": "file"
+    }"""
+
+    // Use curl to POST a multipart/form-data request to Modrinth API
+    commandLine "curl",
+            "-X", "POST",
+            "https://api.modrinth.com/v2/version",
+            "-H", "Authorization: ${System.getenv('MODRINTH_TOKEN')}",
+            "-F", "data=${jsonData};type=application/json",
+            "-F", "file=@${jarFile.absolutePath}"
+}
+
+tasks.register('uploadToCurseForge', TaskPublishCurseForge) {
+    group = 'publishing'
+    // Get the jar file produced by the jarJar task
+    def jarFile = tasks.named('jarJar').get().archiveFile.get().asFile
+
+    def pattern = /(\d+\.\d+)-(\d+\.\d+\.\d+)-(\w+)(?:-(\w+))?/
+    def matcher = version =~ pattern
+
+    if (!matcher.find()) {
+        println("nope")
+        return
+    }
+
+    def mcVersion = matcher.group(1)  // e.g. "1.21.4"
+    def modVersion = matcher.group(2) // e.g. "0.0.1"
+    def releaseType = matcher.group(3) // e.g. "release"
+    def extra = matcher.group(4) ?: "" // If group(4) is null, use an empty string
+
+    def formattedVersion = "[${mcVersion}] SpotiCraft ${modVersion} ${releaseType.capitalize()} ${extra ? extra.capitalize() : ''}".trim()
+
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+    def mainFile = upload(curseforgeProjectId, jarFile)
+
+    mainFile.releaseType = releaseType
+    mainFile.changelog = ''
+    mainFile.addGameVersion(mcVersion)
+    mainFile.addModLoader(extra == "" ? "forge" : extra)
+    mainFile.displayName = formattedVersion
+}
 
 eclipse {
     synchronizationTasks 'genEclipseRuns'

@@ -14,7 +14,7 @@ public class KeyInputHandler {
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (ClientSetup.openSpotifyKey.isDown()) {
+        if (ClientSetup.openSpotifyKey.consumeClick()) {
             if (!wasPressed) {
                 wasPressed = true;
                 TokenStorage.loadToken();
