@@ -1,5 +1,7 @@
 # NEW USER PLEASE READ
-If you're planning to use the mod, and you didn't use it before, you may not be able to do so, if the Spotify app hits the 30 daily user limit, the mod may crash when trying to load data from your account, for news about this you can go [see this issue on GitHub](https://github.com/LeonimusTTV/SpotiCraft/issues/2)
+If you're planning to use the mod, and you didn't use it before, you may not be able to do so, if the Spotify app hits the 30 daily user limit, the mod may crash when trying to load data from your account, for news about this you can go [see this issue on GitHub](https://github.com/LeonimusTTV/SpotiCraft/issues/2) \
+\
+A workaround for this is to make your own Spotify app and build the mod yourself, you'll need to update it every new release and build it again, see the [How to build the mod](#how-to-build-the-mod)
 # SpotiCraft - A new way of listening to music
 
 These are the **official** links to download the mod on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/spoticraft-2) and [Modrinth](https://modrinth.com/mod/spoticraft-2) \
