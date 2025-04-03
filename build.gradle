@@ -193,7 +193,7 @@ tasks.register('uploadToModrinth', Exec) {
     // Get the jar file produced by the jarJar task
     def jarFile = tasks.named('jarJar').get().archiveFile.get().asFile
 
-    def pattern = /(\d+\.\d+)-(\d+\.\d+\.\d+)-(\w+)(?:-(\w+))?/
+    def pattern = /(\d+\.\d+\.\d+)-(\d+\.\d+\.\d+)-(\w+)(?:-(\w+))?/
     def matcher = version =~ pattern
 
     if (!matcher.find()) {
@@ -237,7 +237,7 @@ tasks.register('uploadToCurseForge', TaskPublishCurseForge) {
     // Get the jar file produced by the jarJar task
     def jarFile = tasks.named('jarJar').get().archiveFile.get().asFile
 
-    def pattern = /(\d+\.\d+)-(\d+\.\d+\.\d+)-(\w+)(?:-(\w+))?/
+    def pattern = /(\d+\.\d+\.\d+)-(\d+\.\d+\.\d+)-(\w+)(?:-(\w+))?/
     def matcher = version =~ pattern
 
     if (!matcher.find()) {
