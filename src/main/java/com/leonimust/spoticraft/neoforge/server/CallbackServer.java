@@ -1,6 +1,5 @@
 package com.leonimust.spoticraft.neoforge.server;
 
-import com.leonimust.spoticraft.neoforge.server.SpotifyAuthHandler;
 import fi.iki.elonen.NanoHTTPD;
 
 import java.io.IOException;
