@@ -1,15 +1,14 @@
 package com.leonimust.spoticraft.common.client.ui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import static org.lwjgl.opengl.GL11.*;
-
 
 public class ImageButton extends Button {
 
@@ -38,7 +37,7 @@ public class ImageButton extends Button {
         RenderSystem.texParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         guiGraphics.blit(
-                texture,
+                texture, // RenderType
                 this.getX(),               // X position on screen
                 this.getY(),               // Y position on screen
                 0,                         // Start of texture U
