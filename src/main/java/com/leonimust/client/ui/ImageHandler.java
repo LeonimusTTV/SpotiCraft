@@ -75,7 +75,11 @@ public class ImageHandler {
         }
 
         NativeImage nativeImage = convertToNativeImage(bufferedImage);
-        NativeImageBackedTexture dynamicTexture = new NativeImageBackedTexture(nativeImage);
+        NativeImageBackedTexture dynamicTexture = new NativeImageBackedTexture(
+                () -> "spotify_cover_texture",
+                nativeImage
+        );
+
         Identifier textureLocation = Identifier.of(MOD_ID, "textures/gui/spotify_cover_" + UUID.randomUUID());
         TEXTURE_MANAGER.registerTexture(textureLocation, dynamicTexture);
         CACHE.put(url, textureLocation);
