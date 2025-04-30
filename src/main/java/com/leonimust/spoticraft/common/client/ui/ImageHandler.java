@@ -3,6 +3,7 @@ package com.leonimust.spoticraft.common.client.ui;
 import com.leonimust.spoticraft.Main;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
@@ -40,7 +41,10 @@ public class ImageHandler {
     }
 
     public static void drawImage(GuiGraphics graphics, ResourceLocation musicImage, int height, int imageHeight, int imageWidth) {
-        RenderSystem.setShaderTexture(0, musicImage); // Bind the texture
+        // Use TextureManager to get the GpuTexture from ResourceLocation
+        GpuTexture texture = Minecraft.getInstance().getTextureManager().getTexture(musicImage).getTexture();
+        RenderSystem.setShaderTexture(0, texture); // Now using GpuTexture instead of ResourceLocation
+
         Function<ResourceLocation, RenderType> renderType = RenderType::guiTextured;
         graphics.blit(
                 renderType,
@@ -111,7 +115,10 @@ public class ImageHandler {
         NativeImage nativeImage = convertToNativeImage(bufferedImage);
 
         // Create a DynamicTexture from the NativeImage
-        DynamicTexture dynamicTexture = new DynamicTexture(nativeImage);
+        DynamicTexture dynamicTexture = new DynamicTexture(
+                () -> "spotify_cover_texture", // Supplier<String> providing a name for the texture
+                nativeImage
+        );
 
         // Register the texture in Minecraft's TextureManager
         ResourceLocation textureLocation = ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "textures/gui/spotify_cover_" + UUID.randomUUID());

@@ -3,6 +3,8 @@ package com.leonimust.spoticraft.neoforge.client.ui;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
@@ -45,7 +47,8 @@ public class Item {
     }
 
     public void draw(int x, int y, GuiGraphics graphics) {
-        RenderSystem.setShaderTexture(0, image); // Bind the texture
+        GpuTexture texture = Minecraft.getInstance().getTextureManager().getTexture(image).getTexture();
+        RenderSystem.setShaderTexture(0, texture); // Now using GpuTexture instead of ResourceLocation
         Function<ResourceLocation, RenderType> renderType = RenderType::guiTextured;
         int imageHeight = 30;
         int imageWidth = 30;

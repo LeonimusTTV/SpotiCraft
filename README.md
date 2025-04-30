@@ -46,7 +46,8 @@ I'm also testng Fabric support, please create an issue.
 
 | Minecraft version | Mod version                 | Mod Loader                | Link                                                                                                                                   |
 |-------------------|-----------------------------|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| 1.21.4            | 0.0.1-release               | Forge + NeoForge + Fabric | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) [Fabric](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.4-fabric)   |
+| 1.21.5            | 0.0.1-release               | Forge + NeoForge + Fabric | [Main](https://github.com/LeonimusTTV/SpotiCraft/tree/master) [Fabric](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.5-fabric)   |
+| 1.21.4            | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21.4](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.4) [Fabric](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.4-fabric) |
 | 1.21.3            | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21.3](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3) [Fabric](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.3-fabric) |
 | 1.21.2            | 0.0.1-release               | NeoForge + Fabric         | [1.21.2](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.2) [Fabric](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.2-fabric) |
 | 1.21.1            | 0.0.1-release               | Forge + NeoForge + Fabric | [1.21.1](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1) [Fabric](https://github.com/LeonimusTTV/SpotiCraft/tree/1.21.1-fabric) |
@@ -76,29 +77,29 @@ This guide uses [git](https://git-scm.com/downloads), [IntelliJ from JetBrains](
    **FABRIC MOD ARE ONLY IN minecraftversion-fabric**\
    Please also refere to the [Version List](#version-list) to know what branch is on what version
 
-3. Install [JAVA 21](https://adoptium.net/temurin/releases/) JDK or [JAVA 17](https://adoptium.net/temurin/releases/?version=17) JDK for minecraft 1.20.x (don't forget to check the "Set or override JAVA_HOME variable")\
+2. Install [JAVA 21](https://adoptium.net/temurin/releases/) JDK or [JAVA 17](https://adoptium.net/temurin/releases/?version=17) JDK for minecraft 1.20.x (don't forget to check the "Set or override JAVA_HOME variable")\
    ![image](https://github.com/user-attachments/assets/89a67534-6528-4234-9ca4-fc2cef225d4d)
 
-4. Install [IntelliJ](https://www.jetbrains.com/idea/)
+3. Install [IntelliJ](https://www.jetbrains.com/idea/)
 
-5. Open IntelliJ and open spoticraft's folder
+4. Open IntelliJ and open spoticraft's folder
 
-6. Select the right JAVA SDK in the project settings\
+5. Select the right JAVA SDK in the project settings\
    ![image](https://github.com/user-attachments/assets/5051befd-70e9-442a-8557-c832593287b0)\
    ![image](https://github.com/user-attachments/assets/c66ef941-a28d-4843-a2e5-f9cd2b1678e7)
 
-7. Now select again the right JAVA SDK in the settings\
+6. Now select again the right JAVA SDK in the settings\
    ![image](https://github.com/user-attachments/assets/1a531a9c-68c0-406b-bbf6-b9fdd975d39c)\
    ![image](https://github.com/user-attachments/assets/9a776c3a-0d8a-4317-824a-3afce18656c5)\
    Do **NOT** forget to check the "Download external annotations for dependencies", it might help for some errors
 
-8. Wait for gradle to finish the installation (lil hammer with a green dot)\
+7. Wait for gradle to finish the installation (lil hammer with a green dot)\
    ![image](https://github.com/user-attachments/assets/44418508-aef7-40d7-9fb2-a802314927bb)
 
-9. If you see "BUILD SUCCESSFUL", everything should be good
+8. If you see "BUILD SUCCESSFUL", everything should be good
    ![image](https://github.com/user-attachments/assets/873ce4de-65e3-464f-ab71-d4a82a3984be)
 
-10. If you don't have a BUILD SUCCESSFUL you might have done something wrong, check again this guide and if it still doesn't work, make an issue
+9. If you don't have a BUILD SUCCESSFUL you might have done something wrong, check again this guide and if it still doesn't work, make an issue
 
 ### Spotify Part
 1. Go to this url https://developer.spotify.com/ and log yourself

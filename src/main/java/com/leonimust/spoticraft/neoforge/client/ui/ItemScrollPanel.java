@@ -44,7 +44,7 @@ public class ItemScrollPanel extends ScrollPanel {
     }
 
     @Override
-    protected void drawPanel(GuiGraphics guiGraphics, int entryRight, int relativeY, Tesselator tess, int mouseX, int mouseY) {
+    protected void drawPanel(GuiGraphics guiGraphics, int entryRight, int relativeY, int mouseX, int mouseY) {
         if (items == null || items.isEmpty()) {
             return;
         }

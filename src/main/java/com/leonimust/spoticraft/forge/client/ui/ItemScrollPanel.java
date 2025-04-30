@@ -38,12 +38,7 @@ public class ItemScrollPanel extends ScrollPanel {
     }
 
     @Override
-    protected int getScrollAmount() {
-        return itemHeight*3;
-    }
-
-    @Override
-    protected void drawPanel(GuiGraphics guiGraphics, int entryRight, int relativeY, Tesselator tess, int mouseX, int mouseY) {
+    protected void drawPanel(GuiGraphics guiGraphics, int entryRight, int relativeY, int mouseX, int mouseY) {
         if (items == null || items.isEmpty()) {
             return;
         }
@@ -54,6 +49,11 @@ public class ItemScrollPanel extends ScrollPanel {
             }
             relativeY += itemHeight;
         }
+    }
+
+    @Override
+    protected int getScrollAmount() {
+        return itemHeight*3;
     }
 
     @Override
